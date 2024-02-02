@@ -1,6 +1,9 @@
 package com.hanghae.newsfeed.user.service;
 
+import com.hanghae.newsfeed.user.dto.request.LoginRequestDto;
 import com.hanghae.newsfeed.user.dto.request.SignupRequestDto;
+import com.hanghae.newsfeed.user.dto.response.LoginResponseDto;
+import com.hanghae.newsfeed.user.dto.response.SignupResponseDto;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -15,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SignupRequestDto signup(SignupRequestDto requestDto) {
+    public SignupResponseDto signup(SignupRequestDto requestDto) {
         String email = requestDto.getEmail();
         String nickname = requestDto.getNickname();
 
@@ -37,8 +40,24 @@ public class UserService {
         );
 
         // 유저 엔티티를 DB로 저장
-        User created = userRepository.save(user);
+        User createdUser = userRepository.save(user);
+
         // DTO로 변경하여 반환
-        return SignupRequestDto.createUserDto(created);
+        return new SignupResponseDto(createdUser.getId(), createdUser.getEmail(), createdUser.getNickname());
+    }
+
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        String email = requestDto.getEmail();
+        String password = requestDto.getPassword();
+
+        // 사용자 확인
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+
+        // 비밀번호 확인
+        if (!password.equals(user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+        }
+
+        return new LoginResponseDto(user.getEmail());
     }
 }

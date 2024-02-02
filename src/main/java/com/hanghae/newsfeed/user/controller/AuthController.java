@@ -1,6 +1,9 @@
 package com.hanghae.newsfeed.user.controller;
 
+import com.hanghae.newsfeed.user.dto.request.LoginRequestDto;
 import com.hanghae.newsfeed.user.dto.request.SignupRequestDto;
+import com.hanghae.newsfeed.user.dto.response.LoginResponseDto;
+import com.hanghae.newsfeed.user.dto.response.SignupResponseDto;
 import com.hanghae.newsfeed.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +24,13 @@ public class AuthController {
 
     // 회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<SignupRequestDto> signup(@RequestBody @Valid SignupRequestDto requestDto) {
-        SignupRequestDto createdDto = userService.signup(requestDto);
+    public ResponseEntity<SignupResponseDto> signup(@RequestBody @Valid SignupRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.signup(requestDto));
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(createdDto);
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.login(requestDto));
     }
 }
