@@ -8,17 +8,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupResponseDto {
+public class UserResponseDto {
     private Long id;
     private String email;
     private String nickname;
+    private String description;
+    private String profileImage;
     private String msg;
 
-    public static SignupResponseDto createUserDto(User user, String msg) {
-        return new SignupResponseDto(
+    public static UserResponseDto createUserDto(User user, String msg) {
+        return new UserResponseDto(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
+                user.getDescription(),
+                user.getProfileImage(),
                 msg
         );
     }

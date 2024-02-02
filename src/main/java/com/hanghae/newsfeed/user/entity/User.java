@@ -1,5 +1,6 @@
 package com.hanghae.newsfeed.user.entity;
 
+import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,5 +33,20 @@ public class User {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+    }
+
+    public void patch(UserRequestDto requestDto) {
+        // 객체 갱신
+        if (requestDto.getNickname() != null) {
+            this.nickname = requestDto.getNickname();
+        }
+
+        if (requestDto.getDescription() != null) {
+            this.description = requestDto.getDescription();
+        }
+
+        if (requestDto.getProfileImage() != null) {
+            this.profileImage = requestDto.getProfileImage();
+        }
     }
 }
