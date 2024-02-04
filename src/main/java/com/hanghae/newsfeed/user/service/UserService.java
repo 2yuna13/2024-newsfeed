@@ -73,9 +73,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto update(Long id, UserRequestDto requestDto) {
+    public UserResponseDto update(UserRequestDto requestDto) {
         // 유저 조회 예외 발생
-        User target = userRepository.findById(id)
+        User target = userRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보 수정 실패, 등록된 사용자가 없습니다."));
 
         // 닉네임 중복 확인

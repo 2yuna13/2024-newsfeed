@@ -20,6 +20,7 @@ public class PostService {
 
     @Transactional
     public PostResponseDto create(PostRequestDto requestDto) {
+        // 유저 조회 예외 발생
         User user = userRepository.findById(requestDto.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("게시물 작성 실패, 등록된 사용자가 없습니다."));
 
@@ -29,5 +30,32 @@ public class PostService {
         Post createdPost = postRepository.save(post);
 
         return PostResponseDto.createPostDto(createdPost, "게시물 작성 성공");
+    }
+
+    @Transactional
+    public PostResponseDto update(Long id, PostRequestDto requestDto) {
+        // 게시물 조회 예외 발생
+        Post target = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시물 수정 실패, 등록된 게시물이 없습니다."));
+
+        // 게시물 수정
+        target.patch(requestDto);
+
+        // DB로 갱신
+        Post updatedPost = postRepository.save(target);
+
+        return PostResponseDto.createPostDto(updatedPost, "게시물 수정 성공");
+    }
+
+    @Transactional
+    public PostResponseDto delete(Long id) {
+        // 게시물 조회 예외 발생
+        Post target = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시물 삭제 실패, 등록된 게시물이 없습니다."));
+        
+        // 게시물 삭제
+        postRepository.delete(target);
+
+        return PostResponseDto.createPostDto(target, "게시물 삭제 성공");
     }
 }

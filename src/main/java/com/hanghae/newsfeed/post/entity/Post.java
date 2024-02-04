@@ -1,5 +1,6 @@
 package com.hanghae.newsfeed.post.entity;
 
+import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
 import com.hanghae.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,5 +34,19 @@ public class Post {
         this.title = title;
         this.content = content;
         this.image = image;
+    }
+
+    public void patch(PostRequestDto requestDto) {
+        if (requestDto.getTitle() != null) {
+            this.title = requestDto.getTitle();
+        }
+
+        if (requestDto.getContent() != null) {
+            this.content = requestDto.getContent();
+        }
+
+        if (requestDto.getImage() != null) {
+            this.image = requestDto.getImage();
+        }
     }
 }
