@@ -1,5 +1,6 @@
 package com.hanghae.newsfeed.security.jwt;
 
+import com.hanghae.newsfeed.user.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +20,10 @@ public class JwtTokenProvider { // 토큰을 만들고 분석하는 클래스
     private final Long REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 24 * 14 * 1000L;
 
     // 토큰 생성
-    public String generate(String email, JwtTokenType type){
+    public String generate(String email, UserRoleEnum role, JwtTokenType type){
         Claims claims = Jwts.claims();
         claims.put("email", email);
-//        claims.put("userRole", role); // 사용자 권한을 클레임에 추가
+        claims.put("userRole", role); // 사용자 권한을 클레임에 추가
 
         Date date = new Date();
 
