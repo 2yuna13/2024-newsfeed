@@ -13,6 +13,7 @@ public class CommentResponseDto {
     private Long id;
     @JsonProperty("user_id")
     private Long userId;
+    private String userNickname;
     @JsonProperty("post_id")
     private Long postId;
     private String content;
@@ -22,6 +23,7 @@ public class CommentResponseDto {
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getUser().getId(),
+                comment.getUser().getNickname(),
                 comment.getPost().getId(),
                 comment.getContent(),
                 msg
