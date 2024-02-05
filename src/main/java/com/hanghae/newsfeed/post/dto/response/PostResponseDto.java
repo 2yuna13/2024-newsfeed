@@ -13,6 +13,7 @@ public class PostResponseDto {
     private Long id;
     @JsonProperty("user_id")
     private Long userId;
+    private String userNickname;
     private String title;
     private String content;
     private String image;
@@ -22,6 +23,7 @@ public class PostResponseDto {
         return new PostResponseDto(
                 post.getId(),
                 post.getUser().getId(),
+                post.getUser().getNickname(),
                 post.getTitle(),
                 post.getContent(),
                 post.getImage(),
