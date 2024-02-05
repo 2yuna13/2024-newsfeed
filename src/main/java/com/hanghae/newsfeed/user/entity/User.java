@@ -25,14 +25,18 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String role;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
     private String description;
     private String profileImage;
 
-    public User(String email, String nickname, String password) {
+    public User(String email, String nickname, String password, UserRoleEnum role) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.role = role;
     }
 
     public void patch(UserRequestDto requestDto) {

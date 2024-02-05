@@ -19,14 +19,22 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    // 회원 정보 조회
+    @GetMapping
+    public ResponseEntity<UserResponseDto> getUser(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails));
+    }
+
     // 회원 정보 수정
     @PatchMapping
-    public ResponseEntity<UserResponseDto> update(
+    public ResponseEntity<UserResponseDto> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestBody @Valid UserRequestDto requestDto
     ) {
         requestDto.setId(userDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.update(requestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(requestDto));
     }
 }

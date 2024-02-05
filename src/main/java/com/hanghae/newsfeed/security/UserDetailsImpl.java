@@ -3,9 +3,12 @@ package com.hanghae.newsfeed.security;
 import com.hanghae.newsfeed.user.entity.User;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 public class UserDetailsImpl implements UserDetails {
@@ -13,10 +16,10 @@ public class UserDetailsImpl implements UserDetails {
     private final String email;
     private final String password;
     private final String nickname;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     @Builder
-    public UserDetailsImpl(Long id, String email, String password, String nickname,  final Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String email, String password, String nickname,  Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -25,12 +28,16 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl from(User user) {
+        Set<SimpleGrantedAuthority> authorities = Optional.ofNullable(user.getRole())
+                .map(role -> Set.of(new SimpleGrantedAuthority("ROLE_" + role.name())))
+                .orElse(Collections.emptySet());
+
         return UserDetailsImpl.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .authorities(Set.of()) // 권한 설정 해줘야함.
+                .authorities(authorities) // 권한 설정 해줘야함.
                 .build();
     }
 
