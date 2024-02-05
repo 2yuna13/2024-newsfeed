@@ -1,11 +1,15 @@
 package com.hanghae.newsfeed.post.entity;
 
+import com.hanghae.newsfeed.comment.entity.Comment;
 import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
 import com.hanghae.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +32,9 @@ public class Post {
     private String content;
 
     private String image;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(User user, String title, String content, String image) {
         this.user = user;
