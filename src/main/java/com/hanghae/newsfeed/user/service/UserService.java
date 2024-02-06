@@ -168,4 +168,14 @@ public class UserService {
 
         return UserResponseDto.createUserDto(updatedUser, "비밀번호 수정 성공");
     }
+
+    // 회원 목록 조회
+    public List<UserResponseDto> getAllUsers() {
+
+        List<User> allUsers = userRepository.findAll();
+
+        return allUsers.stream()
+                .map(user -> UserResponseDto.createUserDto((user), "유저 조회 성공"))
+                .collect(Collectors.toList());
+    }
 }

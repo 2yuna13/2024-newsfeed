@@ -59,4 +59,10 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.updatePassword(requestDto));
     }
+
+    // 회원 목록 조회
+    @GetMapping("/all")
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
+    }
 }
