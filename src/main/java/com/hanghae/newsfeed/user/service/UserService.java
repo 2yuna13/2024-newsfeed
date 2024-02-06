@@ -1,5 +1,8 @@
 package com.hanghae.newsfeed.user.service;
 
+import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.entity.Post;
+import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.security.UserDetailsImpl;
 import com.hanghae.newsfeed.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.security.jwt.JwtTokenType;
@@ -21,16 +24,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PwHistoryRepository pwHistoryRepository;
-    
+
     // 회원가입
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -70,7 +75,7 @@ public class UserService {
         // DTO로 변경하여 반환
         return SignupResponseDto.createUserDto(createdUser, "회원가입 성공");
     }
-    
+
     // 로그인
     public LoginResponseDto login(LoginRequestDto requestDto) {
         String email = requestDto.getEmail();
@@ -97,6 +102,18 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
 
         return UserResponseDto.createUserDto(user, "유저 정보 조회 성공");
+    }
+
+    // 내가 작성한 게시물 조회
+    public List<PostResponseDto> getPostsByUserId(UserDetailsImpl userDetails) {
+        User user =  userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+
+        List<Post> allPosts = postRepository.findByUserId(user.getId());
+
+        return allPosts.stream()
+                .map(post -> PostResponseDto.createPostDto(post, "게시물 조회 성공"))
+                .collect(Collectors.toList());
     }
 
     // 회원 정보 수정
