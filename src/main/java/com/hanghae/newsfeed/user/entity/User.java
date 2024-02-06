@@ -35,6 +35,8 @@ public class User extends Timestamped {
 
     private String description;
     private String profileImage;
+    // 유저가 활성 상태인지 확인
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PwHistory> pwHistories = new ArrayList<>();
