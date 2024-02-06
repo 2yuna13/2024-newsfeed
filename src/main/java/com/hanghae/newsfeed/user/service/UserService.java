@@ -9,14 +9,18 @@ import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
 import com.hanghae.newsfeed.user.dto.response.LoginResponseDto;
 import com.hanghae.newsfeed.user.dto.response.SignupResponseDto;
 import com.hanghae.newsfeed.user.dto.response.UserResponseDto;
+import com.hanghae.newsfeed.user.entity.PwHistory;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.entity.UserRoleEnum;
+import com.hanghae.newsfeed.user.repository.PwHistoryRepository;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PwHistoryRepository pwHistoryRepository;
     
     // 회원가입
     @Transactional
@@ -55,6 +60,9 @@ public class UserService {
 //        if (Objects.equals(nickname, "admin")) {
 //            user.setRole(UserRoleEnum.ADMIN);
 //        }
+
+        // 비밀번호 이력 저장
+        user.patchPassword(encodingPassword);
 
         // 유저 엔티티를 DB로 저장
         User createdUser = userRepository.save(user);
@@ -104,12 +112,43 @@ public class UserService {
         });
 
         // 유저 수정
-        target.patch(requestDto);
+        target.patchUser(requestDto);
 
         // DB로 갱신
         User updatedUser = userRepository.save(target);
 
         // DTO로 변경하여 반환
         return UserResponseDto.createUserDto(updatedUser, "유저 정보 수정 성공");
+    }
+
+    // 비밀번호 수정
+    @Transactional
+    public UserResponseDto updatePassword(UserRequestDto requestDto) {
+        // 유저 조회 예외 발생
+        User target = userRepository.findById(requestDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("비밀번호 수정 실패, 등록된 사용자가 없습니다."));
+
+        // 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(requestDto.getPassword(), target.getPassword())) {
+            throw new IllegalArgumentException("비밀번호 수정 실패, 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 최신 비밀번호 3개 가져와서 중복 확인
+        List<PwHistory> pwHistories = pwHistoryRepository.findTop3ByUserOrderByCreatedAtDesc(target);
+
+        boolean isPasswordDuplicate = pwHistories.stream()
+                .anyMatch(pwHistory -> bCryptPasswordEncoder.matches(requestDto.getNewPassword(), pwHistory.getPassword()));
+
+        if (isPasswordDuplicate) {
+            throw new IllegalArgumentException("비밀번호 수정 실패, 최근에 사용한 비밀번호와 중복되어 사용할 수 없습니다.");
+        }
+
+        // 비밀번호 수정
+        String newPassword = bCryptPasswordEncoder.encode(requestDto.getNewPassword());
+        target.patchPassword(newPassword);
+
+        User updatedUser = userRepository.save(target);
+
+        return UserResponseDto.createUserDto(updatedUser, "비밀번호 수정 성공");
     }
 }
