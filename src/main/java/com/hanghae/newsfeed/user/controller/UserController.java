@@ -37,4 +37,15 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(requestDto));
     }
+
+    // 비밀번호 수정
+    @PatchMapping("/password")
+    public ResponseEntity<UserResponseDto> updatePassword(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
+            @RequestBody @Valid UserRequestDto requestDto
+    ) {
+        requestDto.setId(userDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updatePassword(requestDto));
+    }
 }
