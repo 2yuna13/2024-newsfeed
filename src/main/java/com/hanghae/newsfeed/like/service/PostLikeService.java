@@ -46,6 +46,7 @@ public class PostLikeService {
     }
 
     // 게시물 좋아요 취소
+    @Transactional
     public PostLikeResponseDto unlikePost(UserDetailsImpl userDetails, Long postId) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalArgumentException("게시물 좋아요 취소 실패, 등록된 사용자가 없습니다."));
