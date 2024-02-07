@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.user.entity;
 
 import com.hanghae.newsfeed.common.Timestamped;
+import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
 import jakarta.persistence.*;
@@ -44,6 +45,12 @@ public class User extends Timestamped {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
+    private List<Follow> followerList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL)
+    private List<Follow> followingList = new ArrayList<>();
 
     public User(String email, String nickname, String password, UserRoleEnum role) {
         this.email = email;
