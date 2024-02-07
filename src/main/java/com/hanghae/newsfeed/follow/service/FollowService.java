@@ -42,4 +42,25 @@ public class FollowService {
             throw new IllegalArgumentException("팔로우 실패, 자신을 팔로우 할 수 없습니다.");
         }
     }
+
+    // 팔로우 취소
+    public FollowResponseDto unfollowUser(Long followingId, UserDetailsImpl userDetails) {
+        // 사용자 확인
+        User follower = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("팔로우 실패, 등록된 사용자가 없습니다."));
+
+        User following = userRepository.findById(followingId)
+                .orElseThrow(() -> new IllegalArgumentException("팔로우 실패, 등록된 사용자가 없습니다."));
+
+        // 기존 팔로우 여부 확인
+        if (followRepository.existsByFollowerAndFollowing(follower, following)) {
+            Follow follow = followRepository.findByFollowerAndFollowing(follower, following);
+
+            followRepository.delete(follow);
+
+            return new FollowResponseDto(follow.getId(), follower.getId(), following.getId(), "팔로우 취소 성공");
+        } else {
+            throw new IllegalArgumentException("팔로우 취소 실패, 해당 유저를 팔로우 하지 않았습니다.");
+        } 
+    }
 }
