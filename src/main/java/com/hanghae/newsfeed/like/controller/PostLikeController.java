@@ -20,7 +20,16 @@ public class PostLikeController {
     public ResponseEntity<PostLikeResponseDto> likePost(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
-            ) {
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(postLikeService.likePost(userDetails, postId));
+    }
+
+    // 게시물 좋아요 취소
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<PostLikeResponseDto> unLikePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal final UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(postLikeService.unlikePost(userDetails, postId));
     }
 }

@@ -44,4 +44,24 @@ public class PostLikeService {
             throw new IllegalArgumentException("게시물 좋아요 실패, 자신의 글에는 좋아요를 누를 수 없습니다.");
         }
     }
+
+    // 게시물 좋아요 취소
+    public PostLikeResponseDto unlikePost(UserDetailsImpl userDetails, Long postId) {
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시물 좋아요 취소 실패, 등록된 사용자가 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물 좋아요 취소 실패, 등록된 게시글이 없습니다."));
+
+        // 기존 좋아요 여부 확인
+        if (postLikeRepository.existsByUserAndPost(user, post)) {
+            PostLike postLike = postLikeRepository.findByUserAndPost(user, post);
+
+            postLikeRepository.delete(postLike);
+
+            return new PostLikeResponseDto(postLike.getId(), user.getId(), post.getId(), "게시물 좋아요 취소 성공");
+        } else {
+            throw new IllegalArgumentException("게시물 좋아요 취소 실패, 해당 게시글에 좋아요를 누르지 않았습니다.");
+        }
+    }
 }
