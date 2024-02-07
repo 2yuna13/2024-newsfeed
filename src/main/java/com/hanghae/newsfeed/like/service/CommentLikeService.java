@@ -44,4 +44,25 @@ public class CommentLikeService {
             throw new IllegalArgumentException("댓글 좋아요 실패, 자신의 댓글에는 좋아요를 누를 수 없습니다.");
         }
     }
+
+    // 댓글 좋아요 취소
+    @Transactional
+    public CommentLikeResponseDto unlikeComment(UserDetailsImpl userDetails, Long commentId) {
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("댓글 좋아요 실패, 등록된 사용자가 없습니다."));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글 좋아요 실패, 등록된 댓글이 없습니다."));
+
+        // 기존 좋아요 여부 확인
+        if (commentLikeRepository.existsByUserAndComment(user, comment)) {
+            CommentLike commentLike = commentLikeRepository.findByUserAndComment(user, comment);
+
+            commentLikeRepository.delete(commentLike);
+
+            return new CommentLikeResponseDto(commentLike.getId(), user.getId(), comment.getId(), "댓글 좋아요 취소 성공");
+        } else {
+            throw new IllegalArgumentException("댓글 좋아요 취소 실패, 해당 댓글에 좋아요를 누르지 않았습니다.");
+        }
+    }
 }
