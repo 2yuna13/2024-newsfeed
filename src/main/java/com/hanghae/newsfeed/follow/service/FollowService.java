@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class FollowService {
@@ -62,5 +65,32 @@ public class FollowService {
         } else {
             throw new IllegalArgumentException("팔로우 취소 실패, 해당 유저를 팔로우 하지 않았습니다.");
         } 
+    }
+    
+    // 팔로잉 목록 조회
+    public List<FollowResponseDto> followingList(UserDetailsImpl userDetails) {
+        // 사용자 확인
+        User currentUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("팔로잉 목록 조회 실패, 등록된 사용자가 없습니다."));
+
+        List<Follow> followingList = followRepository.findByFollower(currentUser);
+
+        return followingList.stream()
+                .map(follow -> new FollowResponseDto(follow.getId(), follow.getFollower().getId(), follow.getFollowing().getId(), "팔로잉 목록 조회 성공"))
+                .collect(Collectors.toList());
+    }
+    
+    
+    // 팔로워 목록 조회
+    public List<FollowResponseDto> followerList(UserDetailsImpl userDetails) {
+        // 사용자 확인
+        User currentUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("팔로워 목록 조회 실패, 등록된 사용자가 없습니다."));
+
+        List<Follow> followerList = followRepository.findByFollowing(currentUser);
+
+        return followerList.stream()
+                .map(follow -> new FollowResponseDto(follow.getId(), follow.getFollower().getId(), follow.getFollowing().getId(), "팔로워 목록 조회 성공"))
+                .collect(Collectors.toList());
     }
 }
