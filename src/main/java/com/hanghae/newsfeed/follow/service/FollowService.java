@@ -3,6 +3,9 @@ package com.hanghae.newsfeed.follow.service;
 import com.hanghae.newsfeed.follow.dto.response.FollowResponseDto;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.follow.repository.FollowRepository;
+import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.entity.Post;
+import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     // 팔로우
     @Transactional
@@ -91,6 +95,28 @@ public class FollowService {
 
         return followerList.stream()
                 .map(follow -> new FollowResponseDto(follow.getId(), follow.getFollower().getId(), follow.getFollowing().getId(), "팔로워 목록 조회 성공"))
+                .collect(Collectors.toList());
+    }
+
+    // 내가 팔로우한 유저들이 작성한 게시물 조회
+    public List<PostResponseDto> getPostsFromFollowingUsers(UserDetailsImpl userDetails) {
+        // 사용자 확인
+        User currentUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("팔로잉 게시물 조회 실패, 등록된 사용자가 없습니다."));
+
+        // 팔로우 목록
+        List<Follow> followingList = followRepository.findByFollower(currentUser);
+
+        // 팔로우 목록에서 각 유저들 추출
+        List<User> followingUsers = followingList.stream()
+                .map(Follow::getFollowing)
+                .collect(Collectors.toList());
+
+        // 각 유저들의 게시물 조회
+        List<Post> postsFromFollowingUsers = postRepository.findByUserIn(followingUsers);
+
+        return postsFromFollowingUsers.stream()
+                .map(post -> PostResponseDto.createPostDto(post, "팔로잉 게시물 조회 성공"))
                 .collect(Collectors.toList());
     }
 }
