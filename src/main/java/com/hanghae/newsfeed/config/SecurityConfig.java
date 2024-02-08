@@ -30,6 +30,8 @@ public class SecurityConfig {
                         // 게시물 및 댓글 조회는 모든 사용자에게 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                        // 관리자 권한 설정
+                        .requestMatchers("/api/admins/**").hasRole("ADMIN")
                         // 나머지 요청은 인증된 사용자에게만 허용
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

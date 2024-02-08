@@ -178,4 +178,14 @@ public class UserService {
                 .map(user -> UserResponseDto.createUserDto((user), "유저 조회 성공"))
                 .collect(Collectors.toList());
     }
+
+    // 전체 회원 목록 조회
+    public List<UserResponseDto> getAllUsers() {
+
+        List<User> allUsers = userRepository.findAll();
+
+        return allUsers.stream()
+                .map(user -> UserResponseDto.createUserDto((user), "전체 회원 조회 성공"))
+                .collect(Collectors.toList());
+    }
 }
