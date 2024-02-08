@@ -1,5 +1,8 @@
 package com.hanghae.newsfeed.user.dto.request;
 
+import com.hanghae.newsfeed.user.entity.UserRoleEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +18,7 @@ public class UserRequestDto {
     private String newPassword;
     private String description;
     private String profileImage;
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+    private Boolean active;
 }

@@ -14,6 +14,7 @@ public class UserResponseDto {
     private String nickname;
     private String description;
     private String profileImage;
+    private Boolean active;
     private String msg;
 
     public static UserResponseDto createUserDto(User user, String msg) {
@@ -23,6 +24,7 @@ public class UserResponseDto {
                 user.getNickname(),
                 user.getDescription(),
                 user.getProfileImage(),
+                user.getActive(),
                 msg
         );
     }

@@ -61,11 +61,6 @@ public class UserService {
                 UserRoleEnum.USER
         );
 
-        // 추가로 특정 조건을 확인하여 ADMIN 권한 부여 -> 변경 필요
-//        if (Objects.equals(nickname, "admin")) {
-//            user.setRole(UserRoleEnum.ADMIN);
-//        }
-
         // 비밀번호 이력 저장
         user.patchPassword(encodingPassword);
 
@@ -177,5 +172,41 @@ public class UserService {
         return activeUsers.stream()
                 .map(user -> UserResponseDto.createUserDto((user), "유저 조회 성공"))
                 .collect(Collectors.toList());
+    }
+
+    // 전체 회원 목록 조회
+    public List<UserResponseDto> getAllUsers() {
+
+        List<User> allUsers = userRepository.findAll();
+
+        return allUsers.stream()
+                .map(user -> UserResponseDto.createUserDto((user), "전체 회원 조회 성공"))
+                .collect(Collectors.toList());
+    }
+
+    // 회원 권한 수정(USER -> ADMIN / active = false)
+    public UserResponseDto updateUserRoleAndStatus(UserRequestDto requestDto) {
+        // 유저 조회 예외 발생
+        User target = userRepository.findById(requestDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("회원 권한 수정 실패, 등록된 사용자가 없습니다."));
+
+        // 이미 탈퇴한 회원은 수정 불가능
+        if (!target.getActive()) {
+            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
+        }
+
+        // 관리자의 role과 active 수정 불가능
+        if (target.getRole() == UserRoleEnum.ADMIN) {
+            throw new IllegalArgumentException("관리자의 권한은 수정할 수 없습니다.");
+        }
+
+        // 유저 수정
+        target.patchUser(requestDto);
+
+        // DB로 갱신
+        User updatedUser = userRepository.save(target);
+
+        // DTO로 변경하여 반환
+        return UserResponseDto.createUserDto(updatedUser, "회원 권한 수정 성공");
     }
 }

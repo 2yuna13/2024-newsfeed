@@ -72,6 +72,14 @@ public class User extends Timestamped {
         if (requestDto.getProfileImage() != null) {
             this.profileImage = requestDto.getProfileImage();
         }
+
+        if (requestDto.getRole() != null) {
+            this.role = requestDto.getRole();
+        }
+
+        if (requestDto.getActive() != null) {
+            this.active = requestDto.getActive();
+        }
     }
 
     public void patchPassword(String newPassword) {
