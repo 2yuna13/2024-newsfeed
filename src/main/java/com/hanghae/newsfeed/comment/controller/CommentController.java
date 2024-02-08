@@ -16,12 +16,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/comments")
 public class CommentController {
     private final CommentService commentService;
 
     // 댓글 목록 조회
-    @GetMapping("/{postId}/comments")
+    @GetMapping("/{postId}")
     public ResponseEntity<List<CommentResponseDto>> getAllComments(
             @PathVariable Long postId
     ) {
@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     // 댓글 작성
-    @PostMapping("/{postId}/comments")
+    @PostMapping("/{postId}")
     public ResponseEntity<CommentResponseDto> createComment(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
@@ -41,7 +41,7 @@ public class CommentController {
     }
 
     // 댓글 수정
-    @PatchMapping("/comments/{commentId}")
+    @PatchMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
@@ -51,7 +51,7 @@ public class CommentController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> deleteComment(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long commentId
