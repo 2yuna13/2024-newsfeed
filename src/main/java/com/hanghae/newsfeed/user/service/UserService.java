@@ -170,11 +170,11 @@ public class UserService {
     }
 
     // 회원 목록 조회
-    public List<UserResponseDto> getAllUsers() {
+    public List<UserResponseDto> getActiveUsers() {
 
-        List<User> allUsers = userRepository.findAll();
+        List<User> activeUsers = userRepository.findByActiveTrue();
 
-        return allUsers.stream()
+        return activeUsers.stream()
                 .map(user -> UserResponseDto.createUserDto((user), "유저 조회 성공"))
                 .collect(Collectors.toList());
     }

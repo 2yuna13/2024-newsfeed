@@ -23,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     // 회원 정보 조회
-    @GetMapping
+    @GetMapping("/profile")
     public ResponseEntity<UserResponseDto> getUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
@@ -61,8 +61,8 @@ public class UserController {
     }
 
     // 회원 목록 조회
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers());
     }
 }
