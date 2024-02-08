@@ -10,7 +10,6 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,8 +62,8 @@ public class PostService {
         Post target = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 수정 실패, 등록된 게시물이 없습니다."));
 
-        // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인 && 관리자 확인
-        if (!target.getUser().getId().equals(userDetails.getId()) && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
+        if (!target.getUser().getId().equals(userDetails.getId())) {
             throw new IllegalStateException("게시물 수정 권한이 없습니다.");
         }
 
@@ -84,8 +83,8 @@ public class PostService {
         Post target = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 삭제 실패, 등록된 게시물이 없습니다."));
 
-        // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인\
-        if (!target.getUser().getId().equals(userDetails.getId()) && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
+        if (!target.getUser().getId().equals(userDetails.getId())) {
             throw new IllegalStateException("게시물 삭제 권한이 없습니다.");
         }
         
