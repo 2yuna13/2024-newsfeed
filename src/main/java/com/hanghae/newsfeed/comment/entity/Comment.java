@@ -1,12 +1,16 @@
 package com.hanghae.newsfeed.comment.entity;
 
 import com.hanghae.newsfeed.comment.dto.request.CommentRequestDto;
+import com.hanghae.newsfeed.like.entity.CommentLike;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,19 +33,13 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
-    public static Comment creatComment(CommentRequestDto requestDto, User user, Post post) {
-        // 예외 처리
-        if (requestDto.getId() != null) {
-            throw new IllegalArgumentException("댓글 생성 실패, 댓글의 id가 없어야 합니다.");
-        }
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentLike> commentLikes = new ArrayList<>();
 
-        // 엔티티 생성 및 반환
-        return new Comment(
-                requestDto.getId(),
-                user,
-                post,
-                requestDto.getContent()
-        );
+    public Comment(User user, Post post, String content) {
+        this.user = user;
+        this.post = post;
+        this.content = content;
     }
 
     public void patch(CommentRequestDto requestDto) {

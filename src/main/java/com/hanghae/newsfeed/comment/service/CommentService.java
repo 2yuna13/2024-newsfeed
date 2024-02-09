@@ -46,7 +46,7 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("댓글 작성 실패, 등록된 게시물이 없습니다."));
 
         // 댓글 엔티티 생성
-        Comment comment = Comment.creatComment(requestDto, user, post);
+        Comment comment = new Comment(user, post, requestDto.getContent());
 
         Comment createdComment = commentRepository.save(comment);
 

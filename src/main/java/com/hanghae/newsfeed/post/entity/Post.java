@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.post.entity;
 
 import com.hanghae.newsfeed.comment.entity.Comment;
+import com.hanghae.newsfeed.like.entity.PostLike;
 import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
 import com.hanghae.newsfeed.user.entity.User;
 import jakarta.persistence.*;
@@ -35,6 +36,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     public Post(User user, String title, String content, String image) {
         this.user = user;

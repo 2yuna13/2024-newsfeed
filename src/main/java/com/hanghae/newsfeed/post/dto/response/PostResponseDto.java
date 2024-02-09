@@ -18,6 +18,8 @@ public class PostResponseDto {
     private String content;
     private String image;
     private  String msg;
+    @JsonProperty("like_count")
+    private int likeCount;
 
     public static PostResponseDto createPostDto(Post post, String msg) {
         return new PostResponseDto(
@@ -27,7 +29,8 @@ public class PostResponseDto {
                 post.getTitle(),
                 post.getContent(),
                 post.getImage(),
-                msg
+                msg,
+                post.getPostLikes().size()
         );
     }
 }

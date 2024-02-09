@@ -18,6 +18,8 @@ public class CommentResponseDto {
     private Long postId;
     private String content;
     private String msg;
+    @JsonProperty("like_count")
+    private int likeCount;
 
     public static CommentResponseDto createCommentDto(Comment comment, String msg) {
         return new CommentResponseDto(
@@ -26,7 +28,8 @@ public class CommentResponseDto {
                 comment.getUser().getNickname(),
                 comment.getPost().getId(),
                 comment.getContent(),
-                msg
+                msg,
+                comment.getCommentLikes().size()
         );
     }
 }
