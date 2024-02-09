@@ -16,8 +16,10 @@ public class JwtTokenProvider { // 토큰을 만들고 분석하는 클래스
     private String accessSecretKey;
     @Value("${jwt.secret-key.refresh}")
     private String refreshSecretKey;
-    private final Long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L;
-    private final Long REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 24 * 14 * 1000L;
+    @Value("${expired-time.access}")
+    private Long accessTokenExpiredTime;
+    @Value("${expired-time.refresh}")
+    private Long refreshTokenExpiredTime;
 
     // 토큰 생성
     public String generate(String email, UserRoleEnum role, JwtTokenType type){
@@ -31,10 +33,10 @@ public class JwtTokenProvider { // 토큰을 만들고 분석하는 클래스
         Long expiredTime;
         if (type.equals(JwtTokenType.ACCESS)) {
             secretKey = accessSecretKey;
-            expiredTime = ACCESS_TOKEN_EXPIRE_TIME;
+            expiredTime = accessTokenExpiredTime;
         } else {
             secretKey = refreshSecretKey;
-            expiredTime = REFRESH_TOKEN_EXPIRE_TIME;
+            expiredTime = refreshTokenExpiredTime;
         }
 
         return Jwts.builder()
