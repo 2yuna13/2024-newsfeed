@@ -1,4 +1,4 @@
-package com.hanghae.newsfeed.security;
+package com.hanghae.newsfeed.auth.security;
 
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.hanghae.newsfeed.follow.controller;
 import com.hanghae.newsfeed.follow.dto.response.FollowResponseDto;
 import com.hanghae.newsfeed.follow.service.FollowService;
 import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

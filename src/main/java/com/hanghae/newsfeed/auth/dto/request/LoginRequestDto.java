@@ -1,4 +1,4 @@
-package com.hanghae.newsfeed.user.dto.request;
+package com.hanghae.newsfeed.auth.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

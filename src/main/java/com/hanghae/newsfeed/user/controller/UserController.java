@@ -1,7 +1,7 @@
 package com.hanghae.newsfeed.user.controller;
 
 import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
 import com.hanghae.newsfeed.user.dto.response.UserResponseDto;
 import com.hanghae.newsfeed.user.service.UserService;

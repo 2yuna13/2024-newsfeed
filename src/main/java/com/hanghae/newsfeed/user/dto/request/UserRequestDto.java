@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.user.dto.request;
 
-import com.hanghae.newsfeed.user.entity.UserRoleEnum;
+import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Pattern;

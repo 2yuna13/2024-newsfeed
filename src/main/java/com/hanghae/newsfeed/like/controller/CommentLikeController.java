@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.like.controller;
 
 import com.hanghae.newsfeed.like.dto.response.CommentLikeResponseDto;
 import com.hanghae.newsfeed.like.service.CommentLikeService;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

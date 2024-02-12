@@ -6,7 +6,7 @@ import com.hanghae.newsfeed.follow.repository.FollowRepository;
 import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
