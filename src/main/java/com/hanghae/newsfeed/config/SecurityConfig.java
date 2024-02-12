@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.config;
 
-import com.hanghae.newsfeed.security.filter.JwtAuthenticationFilter;
+import com.hanghae.newsfeed.auth.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

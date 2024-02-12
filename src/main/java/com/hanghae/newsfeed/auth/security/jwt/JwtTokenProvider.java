@@ -1,6 +1,6 @@
-package com.hanghae.newsfeed.security.jwt;
+package com.hanghae.newsfeed.auth.security.jwt;
 
-import com.hanghae.newsfeed.user.entity.UserRoleEnum;
+import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

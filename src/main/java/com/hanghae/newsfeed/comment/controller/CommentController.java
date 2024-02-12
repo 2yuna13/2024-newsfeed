@@ -3,7 +3,7 @@ package com.hanghae.newsfeed.comment.controller;
 import com.hanghae.newsfeed.comment.dto.request.CommentRequestDto;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponseDto;
 import com.hanghae.newsfeed.comment.service.CommentService;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

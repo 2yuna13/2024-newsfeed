@@ -1,7 +1,7 @@
-package com.hanghae.newsfeed.security.filter;
+package com.hanghae.newsfeed.auth.security.filter;
 
-import com.hanghae.newsfeed.security.jwt.JwtTokenProvider;
-import com.hanghae.newsfeed.security.jwt.JwtTokenType;
+import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
+import com.hanghae.newsfeed.auth.security.jwt.JwtTokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.hanghae.newsfeed.user.dto.response;
+package com.hanghae.newsfeed.auth.dto.response;
 
 import com.hanghae.newsfeed.user.entity.User;
 import lombok.AllArgsConstructor;

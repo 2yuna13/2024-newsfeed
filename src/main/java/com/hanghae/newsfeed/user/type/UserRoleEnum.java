@@ -1,4 +1,4 @@
-package com.hanghae.newsfeed.user.entity;
+package com.hanghae.newsfeed.user.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

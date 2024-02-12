@@ -5,7 +5,7 @@ import com.hanghae.newsfeed.comment.repository.CommentRepository;
 import com.hanghae.newsfeed.like.dto.response.CommentLikeResponseDto;
 import com.hanghae.newsfeed.like.entity.CommentLike;
 import com.hanghae.newsfeed.like.repository.CommentLikeRepository;
-import com.hanghae.newsfeed.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;

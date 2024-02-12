@@ -4,6 +4,7 @@ import com.hanghae.newsfeed.common.Timestamped;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
+import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
