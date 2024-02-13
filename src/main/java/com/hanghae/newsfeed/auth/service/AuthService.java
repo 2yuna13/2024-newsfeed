@@ -1,21 +1,22 @@
 package com.hanghae.newsfeed.auth.service;
 
-import com.hanghae.newsfeed.auth.dto.request.LoginRequestDto;
-import com.hanghae.newsfeed.auth.dto.request.SignupRequestDto;
-import com.hanghae.newsfeed.auth.dto.response.LoginResponseDto;
-import com.hanghae.newsfeed.auth.dto.response.LogoutResponseDto;
-import com.hanghae.newsfeed.auth.dto.response.SignupResponseDto;
-import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
+import com.hanghae.newsfeed.auth.dto.request.LoginRequest;
+import com.hanghae.newsfeed.auth.dto.request.SignupRequest;
+import com.hanghae.newsfeed.auth.dto.response.LoginResponse;
+import com.hanghae.newsfeed.auth.dto.response.LogoutResponse;
+import com.hanghae.newsfeed.auth.dto.response.SignupResponse;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenType;
 import com.hanghae.newsfeed.common.redis.RedisService;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
+import com.hanghae.newsfeed.common.exception.HttpException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,20 +32,20 @@ public class AuthService {
 
     // 회원가입
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto requestDto) {
-        String email = requestDto.getEmail();
-        String nickname = requestDto.getNickname();
-        String encodingPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
+    public SignupResponse signup(SignupRequest request) {
+        String email = request.getEmail();
+        String nickname = request.getNickname();
+        String encodingPassword = bCryptPasswordEncoder.encode(request.getPassword());
 
         // 이메일 중복 확인
-        userRepository.findByEmail(email).ifPresent(user -> {
-            throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
-        });
+        if (userRepository.existsByEmail(email)){
+            throw new HttpException(false, "중복된 이메일이 존재합니다.", HttpStatus.BAD_REQUEST);
+        };
 
         // 닉네임 중복 확인
-        userRepository.findByNickname(nickname).ifPresent(user -> {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
-        });
+        if (userRepository.existsByNickname(nickname)) {
+            throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
+        }
 
         // 유저 엔티티 생성
         User user = new User(
@@ -58,23 +59,23 @@ public class AuthService {
         user.patchPassword(encodingPassword);
 
         // 유저 엔티티를 DB로 저장
-        User createdUser = userRepository.save(user);
+        userRepository.save(user);
 
         // DTO로 변경하여 반환
-        return SignupResponseDto.createUserDto(createdUser, "회원가입 성공");
+        return new SignupResponse(user.getId(), email, "회원가입 성공");
     }
 
     // 로그인
-    public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse response) {
-        String email = requestDto.getEmail();
-        String password = requestDto.getPassword();
+    public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         // 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            throw new HttpException(false, "비밀번호가 일치하지 않습니다", HttpStatus.BAD_REQUEST);
         }
 
         UserRoleEnum role = user.getRole();
@@ -87,28 +88,25 @@ public class AuthService {
         jwtTokenProvider.accessTokenSetHeader(accessToken, response);
         jwtTokenProvider.refreshTokenSetHeader(refreshToken, response);
 
-        return new LoginResponseDto(accessToken, refreshToken, "로그인 성공");
+        return new LoginResponse(accessToken, refreshToken, "로그인 성공");
     }
 
     // 로그아웃
     @Transactional
-    public LogoutResponseDto logout(UserDetailsImpl userDetails, HttpServletRequest request) {
+    public LogoutResponse logout(HttpServletRequest request) {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
 
         if (redisService.keyExists(accessToken)) {
-            throw new IllegalArgumentException("이미 로그아웃하셨습니다.");
+            throw new HttpException(false, "이미 로그아웃한 사용자입니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (!jwtTokenProvider.isExpired(accessToken, JwtTokenType.ACCESS)) {
-            throw new IllegalArgumentException("access 토큰이 유효하지 않습니다.");
+            throw new HttpException(false, "토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
 
         String email = jwtTokenProvider.getEmail(accessToken, JwtTokenType.ACCESS);
-        if (!email.equals(userDetails.getEmail())) {
-            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
-        }
 
-        String redisKey = "RefreshToken" + email;
+        String redisKey = "RefreshToken:" + email;
         if (redisService.getValue(redisKey) != null) {
             redisService.deleteKey(redisKey);
         }
@@ -116,6 +114,6 @@ public class AuthService {
         Long expiredTime = jwtTokenProvider.getExpiredTime(accessToken, JwtTokenType.ACCESS);
         redisService.setValues(accessToken, "", expiredTime, TimeUnit.MILLISECONDS);
 
-        return new LogoutResponseDto(email, "로그아웃 성공");
+        return new LogoutResponse(email, "로그아웃 성공");
     }
 }

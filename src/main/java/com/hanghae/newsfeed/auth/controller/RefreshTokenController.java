@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.auth.controller;
 
-import com.hanghae.newsfeed.auth.dto.response.RefreshTokenDto;
+import com.hanghae.newsfeed.auth.dto.response.RefreshToken;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.auth.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +21,13 @@ public class RefreshTokenController {
 
     // access 토큰 재발급
     @PostMapping("/refreshToken")
-    public ResponseEntity<RefreshTokenDto> refresh(
+    public ResponseEntity<RefreshToken> refresh(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        RefreshTokenDto accessTokenDto = refreshTokenService.refresh(request);
-        String accessToken = accessTokenDto.getAccessToken();
+        RefreshToken refreshTokenDto = refreshTokenService.refresh(request);
+        String accessToken = refreshTokenDto.getAccessToken();
         jwtTokenProvider.accessTokenSetHeader(accessToken, response);
-        return ResponseEntity.status(HttpStatus.OK).body(accessTokenDto);
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenDto);
     }
 }
