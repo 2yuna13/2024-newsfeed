@@ -3,7 +3,8 @@ package com.hanghae.newsfeed.user.entity;
 import com.hanghae.newsfeed.common.Timestamped;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.post.entity.Post;
-import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
+import com.hanghae.newsfeed.user.dto.request.UserRequest;
+import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -60,20 +61,31 @@ public class User extends Timestamped {
         this.role = role;
     }
 
-    public void patchUser(UserRequestDto requestDto) {
+    public void updateUser(UserUpdateRequest request) {
         // 객체 갱신
-        if (requestDto.getNickname() != null) {
-            this.nickname = requestDto.getNickname();
+        if (request.getNickname() != null) {
+            this.nickname = request.getNickname();
         }
 
-        if (requestDto.getDescription() != null) {
-            this.description = requestDto.getDescription();
+        if (request.getDescription() != null) {
+            this.description = request.getDescription();
         }
 
-        if (requestDto.getProfileImage() != null) {
-            this.profileImage = requestDto.getProfileImage();
+        if (request.getProfileImage() != null) {
+            this.profileImage = request.getProfileImage();
         }
+    }
 
+    public void updatePassword(String newPassword) {
+        PwHistory pwHistory = new PwHistory();
+        pwHistory.setUser(this);
+        pwHistory.setPassword(newPassword);
+        this.pwHistories.add(pwHistory);
+
+        this.password = newPassword;
+    }
+
+    public void updateUserRoleAndActive(UserRequest requestDto) {
         if (requestDto.getRole() != null) {
             this.role = requestDto.getRole();
         }
@@ -81,14 +93,5 @@ public class User extends Timestamped {
         if (requestDto.getActive() != null) {
             this.active = requestDto.getActive();
         }
-    }
-
-    public void patchPassword(String newPassword) {
-        PwHistory pwHistory = new PwHistory();
-        pwHistory.setUser(this);
-        pwHistory.setPassword(newPassword);
-        this.pwHistories.add(pwHistory);
-
-        this.password = newPassword;
     }
 }

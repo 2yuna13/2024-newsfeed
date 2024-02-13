@@ -1,11 +1,14 @@
 package com.hanghae.newsfeed.user.service;
 
+import com.hanghae.newsfeed.common.exception.HttpException;
 import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
-import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
-import com.hanghae.newsfeed.user.dto.response.UserResponseDto;
+import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
+import com.hanghae.newsfeed.user.dto.request.UserRequest;
+import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
+import com.hanghae.newsfeed.user.dto.response.UserResponse;
 import com.hanghae.newsfeed.user.entity.PwHistory;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
@@ -14,6 +17,7 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +34,17 @@ public class UserService {
     private final PwHistoryRepository pwHistoryRepository;
 
     // 회원 정보 조회
-    public UserResponseDto getUser(UserDetailsImpl userDetails) {
+    public UserResponse getUser(UserDetailsImpl userDetails) {
         User user =  userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
-        return UserResponseDto.createUserDto(user, "유저 정보 조회 성공");
+        return UserResponse.createUserDto(user, "유저 정보 조회 성공");
     }
 
     // 내가 작성한 게시물 조회
     public List<PostResponseDto> getPostsByUserId(UserDetailsImpl userDetails) {
         User user =  userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         List<Post> allPosts = postRepository.findByUserId(user.getId());
 
@@ -49,81 +53,81 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // 회원 정보 수정
+    // 회원 정보 수정 (닉네임, 소개, 프로필 사진)
     @Transactional
-    public UserResponseDto updateUser(UserRequestDto requestDto) {
+    public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request) {
         // 유저 조회 예외 발생
-        User target = userRepository.findById(requestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("유저 정보 수정 실패, 등록된 사용자가 없습니다."));
+        User target = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         // 닉네임 중복 확인
-        userRepository.findByNickname(requestDto.getNickname()).ifPresent(user -> {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
-        });
+        if (userRepository.existsByNickname(request.getNickname())) {
+            throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
+        }
 
         // 유저 수정
-        target.patchUser(requestDto);
+        target.updateUser(request);
 
         // DB로 갱신
         User updatedUser = userRepository.save(target);
 
         // DTO로 변경하여 반환
-        return UserResponseDto.createUserDto(updatedUser, "유저 정보 수정 성공");
+        return UserResponse.createUserDto(updatedUser, "유저 정보 수정 성공");
     }
 
     // 비밀번호 수정
     @Transactional
-    public UserResponseDto updatePassword(UserRequestDto requestDto) {
+    public UserResponse updatePassword(UserDetailsImpl userDetails, PasswordUpdateRequest request) {
         // 유저 조회 예외 발생
-        User target = userRepository.findById(requestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("비밀번호 수정 실패, 등록된 사용자가 없습니다."));
+        User target = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         // 비밀번호 확인
-        if (!bCryptPasswordEncoder.matches(requestDto.getPassword(), target.getPassword())) {
-            throw new IllegalArgumentException("비밀번호 수정 실패, 비밀번호가 일치하지 않습니다.");
+        if (!bCryptPasswordEncoder.matches(request.getPassword(), target.getPassword())) {
+            throw new HttpException(false, "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 최신 비밀번호 3개 가져와서 중복 확인
         List<PwHistory> pwHistories = pwHistoryRepository.findTop3ByUserOrderByCreatedAtDesc(target);
 
         boolean isPasswordDuplicate = pwHistories.stream()
-                .anyMatch(pwHistory -> bCryptPasswordEncoder.matches(requestDto.getNewPassword(), pwHistory.getPassword()));
+                .anyMatch(pwHistory -> bCryptPasswordEncoder.matches(request.getNewPassword(), pwHistory.getPassword()));
 
         if (isPasswordDuplicate) {
-            throw new IllegalArgumentException("비밀번호 수정 실패, 최근에 사용한 비밀번호와 중복되어 사용할 수 없습니다.");
+            throw new HttpException(false, "최근에 사용한 비밀번호와 중복되어 사용할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 비밀번호 수정
-        String newPassword = bCryptPasswordEncoder.encode(requestDto.getNewPassword());
-        target.patchPassword(newPassword);
+        String newPassword = bCryptPasswordEncoder.encode(request.getNewPassword());
+        target.updatePassword(newPassword);
 
         User updatedUser = userRepository.save(target);
 
-        return UserResponseDto.createUserDto(updatedUser, "비밀번호 수정 성공");
+        return UserResponse.createUserDto(updatedUser, "비밀번호 수정 성공");
     }
 
     // 회원 목록 조회
-    public List<UserResponseDto> getActiveUsers() {
+    public List<UserResponse> getActiveUsers() {
 
         List<User> activeUsers = userRepository.findByActiveTrue();
 
         return activeUsers.stream()
-                .map(user -> UserResponseDto.createUserDto((user), "유저 조회 성공"))
+                .map(user -> UserResponse.createUserDto((user), "유저 조회 성공"))
                 .collect(Collectors.toList());
     }
 
     // 전체 회원 목록 조회
-    public List<UserResponseDto> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
 
         List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream()
-                .map(user -> UserResponseDto.createUserDto((user), "전체 회원 조회 성공"))
+                .map(user -> UserResponse.createUserDto((user), "전체 회원 조회 성공"))
                 .collect(Collectors.toList());
     }
 
     // 회원 권한 수정(USER -> ADMIN / active = false)
-    public UserResponseDto updateUserRoleAndStatus(UserRequestDto requestDto) {
+    public UserResponse updateUserRoleAndStatus(UserRequest requestDto) {
         // 유저 조회 예외 발생
         User target = userRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 권한 수정 실패, 등록된 사용자가 없습니다."));
@@ -139,12 +143,12 @@ public class UserService {
         }
 
         // 유저 수정
-        target.patchUser(requestDto);
+        target.updateUserRoleAndActive(requestDto);
 
         // DB로 갱신
         User updatedUser = userRepository.save(target);
 
         // DTO로 변경하여 반환
-        return UserResponseDto.createUserDto(updatedUser, "회원 권한 수정 성공");
+        return UserResponse.createUserDto(updatedUser, "회원 권한 수정 성공");
     }
 }

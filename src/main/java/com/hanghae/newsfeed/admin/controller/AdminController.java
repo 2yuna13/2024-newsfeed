@@ -1,7 +1,7 @@
 package com.hanghae.newsfeed.admin.controller;
 
-import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
-import com.hanghae.newsfeed.user.dto.response.UserResponseDto;
+import com.hanghae.newsfeed.user.dto.request.UserRequest;
+import com.hanghae.newsfeed.user.dto.response.UserResponse;
 import com.hanghae.newsfeed.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,15 +18,15 @@ public class AdminController {
 
     // 회원 목록 조회
     @GetMapping("/users")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
 
     // 회원 권한 수정(USER -> ADMIN / active = false)
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> updateUserRoleAndStatus(
+    public ResponseEntity<UserResponse> updateUserRoleAndStatus(
             @PathVariable Long userId,
-            @RequestBody UserRequestDto requestDto
+            @RequestBody UserRequest requestDto
     ) {
         requestDto.setId(userId);
 

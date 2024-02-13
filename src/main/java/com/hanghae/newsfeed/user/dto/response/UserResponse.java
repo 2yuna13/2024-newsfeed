@@ -8,23 +8,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDto {
-    private Long id;
+public class UserResponse {
     private String email;
     private String nickname;
     private String description;
     private String profileImage;
-    private Boolean active;
     private String msg;
 
-    public static UserResponseDto createUserDto(User user, String msg) {
-        return new UserResponseDto(
-                user.getId(),
+    public static UserResponse createUserDto(User user, String msg) {
+        return new UserResponse(
                 user.getEmail(),
                 user.getNickname(),
                 user.getDescription(),
                 user.getProfileImage(),
-                user.getActive(),
                 msg
         );
     }

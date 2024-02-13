@@ -56,7 +56,7 @@ public class AuthService {
         );
 
         // 비밀번호 이력 저장
-        user.patchPassword(encodingPassword);
+        user.updatePassword(encodingPassword);
 
         // 유저 엔티티를 DB로 저장
         userRepository.save(user);

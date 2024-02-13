@@ -2,8 +2,9 @@ package com.hanghae.newsfeed.user.controller;
 
 import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
-import com.hanghae.newsfeed.user.dto.request.UserRequestDto;
-import com.hanghae.newsfeed.user.dto.response.UserResponseDto;
+import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
+import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
+import com.hanghae.newsfeed.user.dto.response.UserResponse;
 import com.hanghae.newsfeed.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class UserController {
 
     // 회원 정보 조회
     @GetMapping("/profile")
-    public ResponseEntity<UserResponseDto> getUser(
+    public ResponseEntity<UserResponse> getUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails));
@@ -38,31 +39,27 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getPostsByUserId(userDetails));
     }
 
-    // 회원 정보 수정
+    // 회원 정보 수정 (닉네임, 소개, 프로필 사진)
     @PatchMapping
-    public ResponseEntity<UserResponseDto> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody @Valid UserRequestDto requestDto
+            @RequestBody @Valid UserUpdateRequest request
     ) {
-        requestDto.setId(userDetails.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(requestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails, request));
     }
 
     // 비밀번호 수정
     @PatchMapping("/password")
-    public ResponseEntity<UserResponseDto> updatePassword(
+    public ResponseEntity<UserResponse> updatePassword(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody @Valid UserRequestDto requestDto
-    ) {
-        requestDto.setId(userDetails.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updatePassword(requestDto));
+            @RequestBody @Valid PasswordUpdateRequest request
+            ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updatePassword(userDetails, request));
     }
 
     // 회원 목록 조회
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers());
     }
 }
