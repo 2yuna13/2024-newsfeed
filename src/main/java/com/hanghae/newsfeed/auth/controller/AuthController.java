@@ -3,13 +3,17 @@ package com.hanghae.newsfeed.auth.controller;
 import com.hanghae.newsfeed.auth.dto.request.LoginRequestDto;
 import com.hanghae.newsfeed.auth.dto.request.SignupRequestDto;
 import com.hanghae.newsfeed.auth.dto.response.LoginResponseDto;
+import com.hanghae.newsfeed.auth.dto.response.LogoutResponseDto;
 import com.hanghae.newsfeed.auth.dto.response.SignupResponseDto;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,5 +32,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(requestDto, response));
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponseDto> logout(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.logout(userDetails, request));
     }
 }

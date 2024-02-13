@@ -3,13 +3,16 @@ package com.hanghae.newsfeed.auth.service;
 import com.hanghae.newsfeed.auth.dto.request.LoginRequestDto;
 import com.hanghae.newsfeed.auth.dto.request.SignupRequestDto;
 import com.hanghae.newsfeed.auth.dto.response.LoginResponseDto;
+import com.hanghae.newsfeed.auth.dto.response.LogoutResponseDto;
 import com.hanghae.newsfeed.auth.dto.response.SignupResponseDto;
+import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenType;
 import com.hanghae.newsfeed.common.redis.RedisService;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +88,34 @@ public class AuthService {
         jwtTokenProvider.refreshTokenSetHeader(refreshToken, response);
 
         return new LoginResponseDto(accessToken, refreshToken, "로그인 성공");
+    }
+
+    // 로그아웃
+    @Transactional
+    public LogoutResponseDto logout(UserDetailsImpl userDetails, HttpServletRequest request) {
+        String accessToken = jwtTokenProvider.resolveAccessToken(request);
+
+        if (redisService.keyExists(accessToken)) {
+            throw new IllegalArgumentException("이미 로그아웃하셨습니다.");
+        }
+
+        if (!jwtTokenProvider.isExpired(accessToken, JwtTokenType.ACCESS)) {
+            throw new IllegalArgumentException("access 토큰이 유효하지 않습니다.");
+        }
+
+        String email = jwtTokenProvider.getEmail(accessToken, JwtTokenType.ACCESS);
+        if (!email.equals(userDetails.getEmail())) {
+            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        }
+
+        String redisKey = "RefreshToken" + email;
+        if (redisService.getValue(redisKey) != null) {
+            redisService.deleteKey(redisKey);
+        }
+
+        Long expiredTime = jwtTokenProvider.getExpiredTime(accessToken, JwtTokenType.ACCESS);
+        redisService.setValues(accessToken, "", expiredTime, TimeUnit.MILLISECONDS);
+
+        return new LogoutResponseDto(email, "로그아웃 성공");
     }
 }
