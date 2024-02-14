@@ -1,16 +1,15 @@
 package com.hanghae.newsfeed.post.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PostRequestDto {
-    private Long id;
-    @JsonProperty("user_id")
-    private Long userId;
+public class PostRequest {
+    @NotBlank
     private String title;
+    @NotBlank
     private String content;
     private String image;
 }

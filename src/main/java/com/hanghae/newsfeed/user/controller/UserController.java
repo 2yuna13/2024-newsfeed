@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.user.controller;
 
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
@@ -33,7 +33,7 @@ public class UserController {
 
     // 내가 작성한 게시물 조회
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponseDto>> getPostsByUserId(
+    public ResponseEntity<List<PostResponse>> getPostsByUserId(
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getPostsByUserId(userDetails));

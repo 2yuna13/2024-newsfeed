@@ -1,9 +1,10 @@
 package com.hanghae.newsfeed.post.controller;
 
-import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.request.PostRequest;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.service.PostService;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,13 +23,13 @@ public class PostController {
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
     }
 
     // 게시물 조회
     @GetMapping("{postId}")
-    public ResponseEntity<PostResponseDto> getPost(
+    public ResponseEntity<PostResponse> getPost(
             @PathVariable Long postId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
@@ -36,31 +37,29 @@ public class PostController {
 
     // 게시물 작성
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(
+    public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody PostRequestDto requestDto
+            @Valid @RequestBody PostRequest request
     ) {
-        requestDto.setUserId(userDetails.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(postService.createPost(requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request));
     }
 
     // 게시물 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(
+    public ResponseEntity<PostResponse> updatePost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long postId,
-            @RequestBody PostRequestDto requestDto
+            @RequestBody PostRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.updatePost(postId, requestDto, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(postService.updatePost(userDetails, postId, request));
     }
 
     // 게시물 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> deletePost(
+    public ResponseEntity<PostResponse> deletePost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long postId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(postId, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(userDetails, postId));
     }
 }

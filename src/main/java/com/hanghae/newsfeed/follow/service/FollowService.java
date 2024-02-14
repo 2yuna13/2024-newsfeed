@@ -3,7 +3,7 @@ package com.hanghae.newsfeed.follow.service;
 import com.hanghae.newsfeed.follow.dto.response.FollowResponseDto;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.follow.repository.FollowRepository;
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
@@ -99,7 +99,7 @@ public class FollowService {
     }
 
     // 내가 팔로우한 유저들이 작성한 게시물 조회
-    public List<PostResponseDto> getPostsFromFollowingUsers(UserDetailsImpl userDetails) {
+    public List<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalArgumentException("팔로잉 게시물 조회 실패, 등록된 사용자가 없습니다."));
@@ -116,7 +116,7 @@ public class FollowService {
         List<Post> postsFromFollowingUsers = postRepository.findByUserIn(followingUsers);
 
         return postsFromFollowingUsers.stream()
-                .map(post -> PostResponseDto.createPostDto(post, "팔로잉 게시물 조회 성공"))
+                .map(post -> PostResponse.createPostDto(post, "팔로잉 게시물 조회 성공"))
                 .collect(Collectors.toList());
     }
 }

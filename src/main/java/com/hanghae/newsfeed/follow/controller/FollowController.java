@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.follow.controller;
 
 import com.hanghae.newsfeed.follow.dto.response.FollowResponseDto;
 import com.hanghae.newsfeed.follow.service.FollowService;
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,7 @@ public class FollowController {
 
     // 내가 팔로우한 유저들이 작성한 게시물 조회
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponseDto>> getPostsFromFollowingUsers(
+    public ResponseEntity<List<PostResponse>> getPostsFromFollowingUsers(
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(followService.getPostsFromFollowingUsers(userDetails));

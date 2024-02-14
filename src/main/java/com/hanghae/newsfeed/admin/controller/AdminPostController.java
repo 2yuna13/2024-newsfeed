@@ -1,8 +1,8 @@
 package com.hanghae.newsfeed.admin.controller;
 
 import com.hanghae.newsfeed.admin.service.AdminPostService;
-import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.request.PostRequest;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +20,13 @@ public class AdminPostController {
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
     }
 
     // 게시물 조회
     @GetMapping("{postId}")
-    public ResponseEntity<PostResponseDto> getPost(
+    public ResponseEntity<PostResponse> getPost(
             @PathVariable Long postId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
@@ -34,16 +34,16 @@ public class AdminPostController {
 
     // 게시물 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(
+    public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long postId,
-            @RequestBody PostRequestDto requestDto
+            @RequestBody PostRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminPostService.updatePost(postId, requestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(adminPostService.updatePost(postId, request));
     }
 
     // 게시물 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> deletePost(
+    public ResponseEntity<PostResponse> deletePost(
             @PathVariable Long postId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(adminPostService.deletePost(postId));

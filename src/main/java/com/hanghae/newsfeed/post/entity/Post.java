@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.post.entity;
 
 import com.hanghae.newsfeed.comment.entity.Comment;
 import com.hanghae.newsfeed.like.entity.PostLike;
-import com.hanghae.newsfeed.post.dto.request.PostRequestDto;
+import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,17 +47,17 @@ public class Post {
         this.image = image;
     }
 
-    public void patch(PostRequestDto requestDto) {
-        if (requestDto.getTitle() != null) {
-            this.title = requestDto.getTitle();
+    public void updatePost(PostRequest request) {
+        if (request.getTitle() != null) {
+            this.title = request.getTitle();
         }
 
-        if (requestDto.getContent() != null) {
-            this.content = requestDto.getContent();
+        if (request.getContent() != null) {
+            this.content = request.getContent();
         }
 
-        if (requestDto.getImage() != null) {
-            this.image = requestDto.getImage();
+        if (request.getImage() != null) {
+            this.image = request.getImage();
         }
     }
 }

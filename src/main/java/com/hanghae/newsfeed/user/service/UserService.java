@@ -1,7 +1,7 @@
 package com.hanghae.newsfeed.user.service;
 
 import com.hanghae.newsfeed.common.exception.HttpException;
-import com.hanghae.newsfeed.post.dto.response.PostResponseDto;
+import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
@@ -40,14 +40,14 @@ public class UserService {
     }
 
     // 내가 작성한 게시물 조회
-    public List<PostResponseDto> getPostsByUserId(UserDetailsImpl userDetails) {
+    public List<PostResponse> getPostsByUserId(UserDetailsImpl userDetails) {
         User user =  userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         List<Post> allPosts = postRepository.findByUserId(user.getId());
 
         return allPosts.stream()
-                .map(post -> PostResponseDto.createPostDto(post, "게시물 조회 성공"))
+                .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"))
                 .collect(Collectors.toList());
     }
 

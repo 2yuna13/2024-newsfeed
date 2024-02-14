@@ -9,28 +9,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostResponseDto {
-    private Long id;
-    @JsonProperty("user_id")
-    private Long userId;
+public class PostResponse {
     private String userNickname;
     private String title;
     private String content;
     private String image;
-    private  String msg;
     @JsonProperty("like_count")
     private int likeCount;
+    private  String msg;
 
-    public static PostResponseDto createPostDto(Post post, String msg) {
-        return new PostResponseDto(
-                post.getId(),
-                post.getUser().getId(),
+    public static PostResponse createPostDto(Post post, String msg) {
+        return new PostResponse(
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getContent(),
                 post.getImage(),
-                msg,
-                post.getPostLikes().size()
+                post.getPostLikes().size(),
+                msg
         );
     }
 }
