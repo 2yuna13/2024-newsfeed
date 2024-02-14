@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.follow.controller;
 
-import com.hanghae.newsfeed.follow.dto.response.FollowResponseDto;
+import com.hanghae.newsfeed.follow.dto.response.FollowResponse;
 import com.hanghae.newsfeed.follow.service.FollowService;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
@@ -20,7 +20,7 @@ public class FollowController {
 
     // 팔로우
     @PostMapping("/{followingId}")
-    public ResponseEntity<FollowResponseDto> followUser(
+    public ResponseEntity<FollowResponse> followUser(
             @PathVariable Long followingId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
@@ -29,7 +29,7 @@ public class FollowController {
 
     // 팔로우 취소
     @DeleteMapping("/{followingId}")
-    public ResponseEntity<FollowResponseDto> unfollowUser(
+    public ResponseEntity<FollowResponse> unfollowUser(
             @PathVariable Long followingId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
@@ -38,13 +38,13 @@ public class FollowController {
 
     // 팔로잉 목록 조회
     @GetMapping("/followings")
-    public ResponseEntity<List<FollowResponseDto>> getFollowingList(@AuthenticationPrincipal final UserDetailsImpl userDetails) {
+    public ResponseEntity<List<FollowResponse>> getFollowingList(@AuthenticationPrincipal final UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(followService.followingList(userDetails));
     }
 
     // 팔로워 목록 조회
     @GetMapping("/followers")
-    public ResponseEntity<List<FollowResponseDto>> getFollowerList(@AuthenticationPrincipal final UserDetailsImpl userDetails) {
+    public ResponseEntity<List<FollowResponse>> getFollowerList(@AuthenticationPrincipal final UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(followService.followerList(userDetails));
     }
 

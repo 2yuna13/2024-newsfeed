@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FollowResponseDto {
-    private Long id;
+public class FollowResponse {
     @JsonProperty("follower_id")
     private Long followerId;
     @JsonProperty("following_id")
