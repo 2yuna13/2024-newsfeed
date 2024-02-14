@@ -6,12 +6,10 @@ import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
-import com.hanghae.newsfeed.user.dto.request.UserRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.dto.response.UserResponse;
 import com.hanghae.newsfeed.user.entity.PwHistory;
 import com.hanghae.newsfeed.user.entity.User;
-import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import com.hanghae.newsfeed.user.repository.PwHistoryRepository;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -112,43 +110,7 @@ public class UserService {
         List<User> activeUsers = userRepository.findByActiveTrue();
 
         return activeUsers.stream()
-                .map(user -> UserResponse.createUserDto((user), "유저 조회 성공"))
+                .map(user -> UserResponse.createUserDto(user, "유저 조회 성공"))
                 .collect(Collectors.toList());
-    }
-
-    // 전체 회원 목록 조회
-    public List<UserResponse> getAllUsers() {
-
-        List<User> allUsers = userRepository.findAll();
-
-        return allUsers.stream()
-                .map(user -> UserResponse.createUserDto((user), "전체 회원 조회 성공"))
-                .collect(Collectors.toList());
-    }
-
-    // 회원 권한 수정(USER -> ADMIN / active = false)
-    public UserResponse updateUserRoleAndStatus(UserRequest requestDto) {
-        // 유저 조회 예외 발생
-        User target = userRepository.findById(requestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("회원 권한 수정 실패, 등록된 사용자가 없습니다."));
-
-        // 이미 탈퇴한 회원은 수정 불가능
-        if (!target.getActive()) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
-        }
-
-        // 관리자의 role과 active 수정 불가능
-        if (target.getRole() == UserRoleEnum.ADMIN) {
-            throw new IllegalArgumentException("관리자의 권한은 수정할 수 없습니다.");
-        }
-
-        // 유저 수정
-        target.updateUserRoleAndActive(requestDto);
-
-        // DB로 갱신
-        User updatedUser = userRepository.save(target);
-
-        // DTO로 변경하여 반환
-        return UserResponse.createUserDto(updatedUser, "회원 권한 수정 성공");
     }
 }

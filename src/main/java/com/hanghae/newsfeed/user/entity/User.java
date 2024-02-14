@@ -1,9 +1,9 @@
 package com.hanghae.newsfeed.user.entity;
 
+import com.hanghae.newsfeed.admin.dto.request.AdminUserRequest;
 import com.hanghae.newsfeed.common.Timestamped;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.post.entity.Post;
-import com.hanghae.newsfeed.user.dto.request.UserRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.persistence.*;
@@ -85,13 +85,13 @@ public class User extends Timestamped {
         this.password = newPassword;
     }
 
-    public void updateUserRoleAndActive(UserRequest requestDto) {
-        if (requestDto.getRole() != null) {
-            this.role = requestDto.getRole();
+    public void updateUserRoleAndActive(AdminUserRequest request) {
+        if (request.getRole() != null) {
+            this.role = request.getRole();
         }
 
-        if (requestDto.getActive() != null) {
-            this.active = requestDto.getActive();
+        if (request.getActive() != null) {
+            this.active = request.getActive();
         }
     }
 }
