@@ -13,21 +13,18 @@ public class CommentResponse {
     @JsonProperty("post_id")
     private Long postId;
     private String userNickname;
-    @JsonProperty("post_id")
-    private Long postId;
     private String content;
-    private String msg;
     @JsonProperty("like_count")
     private int likeCount;
+    private String msg;
 
     public static CommentResponse createCommentDto(Comment comment, String msg) {
         return new CommentResponse(
                 comment.getPost().getId(),
                 comment.getUser().getNickname(),
-                comment.getPost().getId(),
                 comment.getContent(),
-                msg,
-                comment.getCommentLikes().size()
+                comment.getCommentLikes().size(),
+                msg
         );
     }
 }

@@ -32,7 +32,7 @@ public class AdminCommentController {
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminCommentService.updateComment(commentId, requestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(adminCommentService.updateComment(commentId, request));
     }
 
     // 댓글 삭제

@@ -35,9 +35,7 @@ public class CommentController {
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestBody CommentRequest request
     ) {
-        requestDto.setUserId(userDetails.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.createComment(postId, requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, userDetails, request));
     }
 
     // 댓글 수정
@@ -47,7 +45,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, requestDto, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(userDetails, commentId, request));
     }
 
     // 댓글 삭제
@@ -56,6 +54,6 @@ public class CommentController {
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long commentId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(commentId, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(userDetails, commentId));
     }
 }

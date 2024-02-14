@@ -4,6 +4,7 @@ import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
 import com.hanghae.newsfeed.comment.entity.Comment;
 import com.hanghae.newsfeed.comment.repository.CommentRepository;
+import com.hanghae.newsfeed.common.exception.HttpException;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
@@ -12,6 +13,7 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,15 +40,15 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(Long postId, UserDetailsImpl userDetails, CommentRequest request) {
         // 유저 조회 예외 발생
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("댓글 작성 실패, 등록된 사용자가 없습니다."));
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         // 게시물 조회 예외 발생
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글 작성 실패, 등록된 게시물이 없습니다."));
+                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
 
         // 댓글 엔티티 생성
-        Comment comment = new Comment(user, post, requestDto.getContent());
+        Comment comment = new Comment(user, post, request.getContent());
 
         Comment createdComment = commentRepository.save(comment);
 
@@ -58,15 +60,15 @@ public class CommentService {
     public CommentResponse updateComment(UserDetailsImpl userDetails, Long commentId, CommentRequest request) {
         // 댓글 조회 예외 발생
         Comment target = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(" 댓글 수정 실패, 해당 댓글이 없습니다."));
+                .orElseThrow(() -> new HttpException(false, "등록된 댓글이 없습니다.", HttpStatus.NOT_FOUND));
 
         // 댓글 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new IllegalStateException("댓글 수정 권한이 없습니다.");
+            throw new HttpException(false, "댓글 수정 권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 댓글 수정
-        target.patch(requestDto);
+        target.updateComment(request);
 
         // DB로 갱신
         Comment updatedComment = commentRepository.save(target);
@@ -79,11 +81,11 @@ public class CommentService {
     public CommentResponse deleteComment(UserDetailsImpl userDetails, Long commentId) {
         // 댓글 조회 예외 발생
         Comment target = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(" 댓글 삭제 실패, 해당 댓글이 없습니다."));
+                .orElseThrow(() -> new HttpException(false, "등록된 댓글이 없습니다.", HttpStatus.NOT_FOUND));
 
         // 댓글 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new IllegalStateException("댓글 삭제 권한이 없습니다.");
+            throw new HttpException(false, "댓글 삭제 권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 댓글 삭제
