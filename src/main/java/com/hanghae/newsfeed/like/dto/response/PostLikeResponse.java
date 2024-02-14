@@ -8,11 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentLikeResponseDto {
-    private Long id;
+public class PostLikeResponse {
     @JsonProperty("user_id")
     private Long userId;
-    @JsonProperty("comment_id")
-    private Long commentId;
+    @JsonProperty("post_id")
+    private Long postId;
     private String msg;
 }

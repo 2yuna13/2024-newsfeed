@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.like.controller;
 
-import com.hanghae.newsfeed.like.dto.response.PostLikeResponseDto;
+import com.hanghae.newsfeed.like.dto.response.PostLikeResponse;
 import com.hanghae.newsfeed.like.service.PostLikeService;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class PostLikeController {
 
     // 게시물 좋아요
     @PostMapping("/posts/{postId}")
-    public ResponseEntity<PostLikeResponseDto> likePost(
+    public ResponseEntity<PostLikeResponse> likePost(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
@@ -26,7 +26,7 @@ public class PostLikeController {
 
     // 게시물 좋아요 취소
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<PostLikeResponseDto> unLikePost(
+    public ResponseEntity<PostLikeResponse> unLikePost(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
     ) {
