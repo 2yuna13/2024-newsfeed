@@ -78,6 +78,11 @@ public class AuthService {
             throw new HttpException(false, "비밀번호가 일치하지 않습니다", HttpStatus.BAD_REQUEST);
         }
 
+        // 탈퇴한 사용자인지 확인
+        if (!user.getActive()) {
+            throw new HttpException(false, "해당 계정은 탈퇴되었습니다.", HttpStatus.BAD_REQUEST);
+        }
+
         UserRoleEnum role = user.getRole();
         String accessToken = jwtTokenProvider.generate(email, role, JwtTokenType.ACCESS);
         String refreshToken = jwtTokenProvider.generate(email, role, JwtTokenType.REFRESH);
