@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentResponseDto {
-    private Long id;
-    @JsonProperty("user_id")
-    private Long userId;
+public class CommentResponse {
+    @JsonProperty("post_id")
+    private Long postId;
     private String userNickname;
     @JsonProperty("post_id")
     private Long postId;
@@ -21,10 +20,9 @@ public class CommentResponseDto {
     @JsonProperty("like_count")
     private int likeCount;
 
-    public static CommentResponseDto createCommentDto(Comment comment, String msg) {
-        return new CommentResponseDto(
-                comment.getId(),
-                comment.getUser().getId(),
+    public static CommentResponse createCommentDto(Comment comment, String msg) {
+        return new CommentResponse(
+                comment.getPost().getId(),
                 comment.getUser().getNickname(),
                 comment.getPost().getId(),
                 comment.getContent(),

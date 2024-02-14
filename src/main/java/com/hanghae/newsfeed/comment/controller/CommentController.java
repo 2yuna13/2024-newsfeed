@@ -1,7 +1,7 @@
 package com.hanghae.newsfeed.comment.controller;
 
-import com.hanghae.newsfeed.comment.dto.request.CommentRequestDto;
-import com.hanghae.newsfeed.comment.dto.response.CommentResponseDto;
+import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
+import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
 import com.hanghae.newsfeed.comment.service.CommentService;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class CommentController {
 
     // 댓글 목록 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<List<CommentResponseDto>> getAllComments(
+    public ResponseEntity<List<CommentResponse>> getAllComments(
             @PathVariable Long postId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments(postId));
@@ -30,10 +30,10 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/{postId}")
-    public ResponseEntity<CommentResponseDto> createComment(
+    public ResponseEntity<CommentResponse> createComment(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody CommentRequestDto requestDto
+            @RequestBody CommentRequest request
     ) {
         requestDto.setUserId(userDetails.getId());
 
@@ -42,17 +42,17 @@ public class CommentController {
 
     // 댓글 수정
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> updateComment(
-            @PathVariable Long commentId,
+    public ResponseEntity<CommentResponse> updateComment(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody CommentRequestDto requestDto
+            @PathVariable Long commentId,
+            @RequestBody CommentRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, requestDto, userDetails));
     }
 
     // 댓글 삭제
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> deleteComment(
+    public ResponseEntity<CommentResponse> deleteComment(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long commentId
     ) {

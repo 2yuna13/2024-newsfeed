@@ -1,6 +1,6 @@
 package com.hanghae.newsfeed.comment.entity;
 
-import com.hanghae.newsfeed.comment.dto.request.CommentRequestDto;
+import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.like.entity.CommentLike;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.user.entity.User;
@@ -42,9 +42,9 @@ public class Comment {
         this.content = content;
     }
 
-    public void patch(CommentRequestDto requestDto) {
-        if (requestDto.getContent() != null) {
-            this.content = requestDto.getContent();
+    public void updateComment(CommentRequest request) {
+        if (request.getContent() != null) {
+            this.content = request.getContent();
         }
     }
 }

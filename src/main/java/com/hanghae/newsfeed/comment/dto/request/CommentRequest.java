@@ -5,12 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
-public class CommentRequestDto {
-    private Long id;
-    @JsonProperty("user_id")
-    private Long userId;
-    @JsonProperty("post_id")
-    private Long postId;
+public class CommentRequest {
     private String content;
 }
