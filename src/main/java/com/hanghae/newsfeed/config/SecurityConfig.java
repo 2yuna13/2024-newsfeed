@@ -24,6 +24,9 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/signup-page").permitAll()
+                        .requestMatchers("/login-page").permitAll()
+                        .requestMatchers("/hi").permitAll()
                         // 회원가입 및 로그인은 모든 사용자에게 허용
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
