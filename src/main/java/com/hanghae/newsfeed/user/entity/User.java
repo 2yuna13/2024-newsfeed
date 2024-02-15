@@ -71,7 +71,7 @@ public class User extends Timestamped {
             this.description = request.getDescription();
         }
 
-        if (request.getProfileImage() != null) {
+        if (profileImage != null) {
             this.profileImage = profileImage;
         }
     }
