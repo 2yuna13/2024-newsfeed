@@ -61,7 +61,7 @@ public class User extends Timestamped {
         this.role = role;
     }
 
-    public void updateUser(UserUpdateRequest request) {
+    public void updateUser(UserUpdateRequest request, String profileImage) {
         // 객체 갱신
         if (request.getNickname() != null) {
             this.nickname = request.getNickname();
@@ -71,8 +71,8 @@ public class User extends Timestamped {
             this.description = request.getDescription();
         }
 
-        if (request.getProfileImage() != null) {
-            this.profileImage = request.getProfileImage();
+        if (profileImage != null) {
+            this.profileImage = profileImage;
         }
     }
 
