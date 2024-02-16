@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -23,23 +25,23 @@ public class S3UploadService {
     private String bucket;
 
     // 프로필 사진 S3 업로드
-//    public String uploadProfile(MultipartFile profileImage) throws IOException {
-//        String uniqueFilename = UUID.randomUUID().toString() + "-" + profileImage.getOriginalFilename();
-//
-//        ObjectMetadata metadata = new ObjectMetadata();
-//        metadata.setContentLength(profileImage.getSize());
-//        metadata.setContentType(profileImage.getContentType());
-//
-//        amazonS3Client.putObject(bucket, uniqueFilename, profileImage.getInputStream(), metadata);
-//        return amazonS3Client.getUrl(bucket, uniqueFilename).toString();
-//    }
-
-    // 프로필 사진 S3 업로드
     public String uploadProfile(MultipartFile uploadFile, String dirName) throws IOException {
         String fileName = dirName + "/" + UUID.randomUUID();
-        String uploadImageUrl = putS3(uploadFile, fileName);
 
-        return uploadImageUrl;
+        return putS3(uploadFile, fileName);
+    }
+
+    // 게시물 멀티미디어 S3 업로드
+    public List<String> uploadMultimedia(List<MultipartFile> multipartFileList, String dirName) throws IOException {
+        List<String> uploadImageUrls = new ArrayList<>();
+
+        for (MultipartFile multipartFiles : multipartFileList) {
+            String fileName = dirName + "/" + UUID.randomUUID();
+            String uploadImageUrl = putS3(multipartFiles, fileName);
+            uploadImageUrls.add(uploadImageUrl);
+        }
+
+        return uploadImageUrls;
     }
 
     // S3로 업로드
@@ -56,8 +58,8 @@ public class S3UploadService {
     }
 
     // S3 이미지 삭제
-    public void deleteFile(String filename) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filename));
-        System.out.println(String.format("[%s] deletion complete", filename));
-    }
+//    public void deleteFile(String filename) {
+//        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filename));
+//        System.out.println(String.format("[%s] deletion complete", filename));
+//    }
 }

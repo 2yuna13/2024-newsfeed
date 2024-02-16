@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +15,6 @@ public class PostResponse {
     private String userNickname;
     private String title;
     private String content;
-    private String image;
     @JsonProperty("like_count")
     private int likeCount;
     private  String msg;
@@ -23,7 +24,6 @@ public class PostResponse {
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getContent(),
-                post.getImage(),
                 post.getPostLikes().size(),
                 msg
         );
