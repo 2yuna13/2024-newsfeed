@@ -41,14 +41,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getPostsByUserId(userDetails));
     }
 
-    // 회원 정보 수정 (닉네임, 소개, 프로필 사진)
+    // 회원 정보 수정 (닉네임, 소개,)
     @PatchMapping
     public ResponseEntity<UserResponse> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestPart(value="data") @Valid UserUpdateRequest request,
+            @RequestBody @Valid UserUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails, request));
+    }
+
+    // 프로필 사진 수정
+    @PatchMapping("/profileImage")
+    public ResponseEntity<UserResponse> updateProfileImage(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestPart(name ="file") MultipartFile image
             ) throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails, request, image));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfileImage(userDetails, image));
     }
 
     // 비밀번호 수정
