@@ -11,5 +11,4 @@ public class PostRequest {
     private String title;
     @NotBlank
     private String content;
-    private String image;
 }

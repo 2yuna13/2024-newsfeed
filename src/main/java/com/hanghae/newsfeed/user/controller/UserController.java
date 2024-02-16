@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -43,9 +45,10 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<UserResponse> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody @Valid UserUpdateRequest request
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails, request));
+            @RequestPart(value="data") @Valid UserUpdateRequest request,
+            @RequestPart(name ="file") MultipartFile image
+            ) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails, request, image));
     }
 
     // 비밀번호 수정

@@ -1,5 +1,6 @@
 package com.hanghae.newsfeed.user.service;
 
+import com.hanghae.newsfeed.common.aws.S3UploadService;
 import com.hanghae.newsfeed.common.exception.HttpException;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
@@ -18,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,7 @@ public class UserService {
     private final PostRepository postRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PwHistoryRepository pwHistoryRepository;
+    private final S3UploadService s3UploadService;
 
     // 회원 정보 조회
     public UserResponse getUser(UserDetailsImpl userDetails) {
@@ -53,7 +57,7 @@ public class UserService {
 
     // 회원 정보 수정 (닉네임, 소개, 프로필 사진)
     @Transactional
-    public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request) {
+    public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request, MultipartFile image) throws IOException {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
@@ -63,8 +67,13 @@ public class UserService {
             throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
         }
 
+        String profileImages = null;
+        if (!image.isEmpty()) {
+            profileImages = s3UploadService.uploadProfile(image, "profileImage");
+        }
+
         // 유저 수정
-        target.updateUser(request);
+        target.updateUser(request, profileImages);
 
         // DB로 갱신
         User updatedUser = userRepository.save(target);

@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -39,9 +41,10 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @Valid @RequestBody PostRequest request
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request));
+            @RequestPart(value = "data") @Valid PostRequest request,
+            @RequestPart(name = "files") List<MultipartFile> files
+    ) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request, files));
     }
 
     // 게시물 수정
@@ -52,6 +55,16 @@ public class PostController {
             @RequestBody PostRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.updatePost(userDetails, postId, request));
+    }
+
+    // 게시물 멀티미디어 수정
+    @PatchMapping("/{postId}/multimedia")
+    public ResponseEntity<PostResponse> updatePostMultimedia(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
+            @PathVariable Long postId,
+            @RequestPart(name = "files") List<MultipartFile> files
+    ) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.updatePostMultimedia(userDetails, postId, files));
     }
 
     // 게시물 삭제
