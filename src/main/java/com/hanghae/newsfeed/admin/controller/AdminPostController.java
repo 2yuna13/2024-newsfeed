@@ -2,7 +2,9 @@ package com.hanghae.newsfeed.admin.controller;
 
 import com.hanghae.newsfeed.admin.service.AdminPostService;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
+import com.hanghae.newsfeed.post.dto.response.MultimediaResponse;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
+import com.hanghae.newsfeed.post.service.MultimediaService;
 import com.hanghae.newsfeed.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 public class AdminPostController {
     private final PostService postService;
     private final AdminPostService adminPostService;
+    private final MultimediaService multimediaService;
 
     // 게시물 목록 조회
     @GetMapping
@@ -30,6 +33,14 @@ public class AdminPostController {
             @PathVariable Long postId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
+    }
+
+    // 게시물 멀티미디어 조회
+    @GetMapping("/multimedia/{postId}")
+    public ResponseEntity<List<MultimediaResponse>> getMultimediaList(
+            @PathVariable Long postId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(multimediaService.getMultimediaList(postId));
     }
 
     // 게시물 수정
