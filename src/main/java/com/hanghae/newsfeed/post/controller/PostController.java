@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -39,8 +40,8 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @Valid @RequestBody PostRequest request
-    ) {
+            @RequestBody @Valid PostRequest request
+    ) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request));
     }
 

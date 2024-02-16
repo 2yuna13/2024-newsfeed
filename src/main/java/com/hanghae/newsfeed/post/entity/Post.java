@@ -32,19 +32,19 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    private String image;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostLike> postLikes = new ArrayList<>();
 
-    public Post(User user, String title, String content, String image) {
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Multimedia> multimediaList = new ArrayList<>();
+
+    public Post(User user, String title, String content) {
         this.user = user;
         this.title = title;
         this.content = content;
-        this.image = image;
     }
 
     public void updatePost(PostRequest request) {
@@ -54,10 +54,6 @@ public class Post {
 
         if (request.getContent() != null) {
             this.content = request.getContent();
-        }
-
-        if (request.getImage() != null) {
-            this.image = request.getImage();
         }
     }
 }

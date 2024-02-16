@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,13 +45,13 @@ public class PostService {
 
     // 게시물 작성
     @Transactional
-    public PostResponse createPost(UserDetailsImpl userDetails, PostRequest request) {
+    public PostResponse createPost(UserDetailsImpl userDetails, PostRequest request) throws IOException {
         // 유저 조회 예외 발생
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
 
         // 게시물 엔티티 생성
-        Post post = new Post(user, request.getTitle(), request.getContent(), request.getImage());
+        Post post = new Post(user, request.getTitle(), request.getContent());
 
         Post createdPost = postRepository.save(post);
 
