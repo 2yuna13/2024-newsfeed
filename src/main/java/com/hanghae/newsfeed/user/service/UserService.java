@@ -55,9 +55,9 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // 회원 정보 수정 (닉네임, 소개, 프로필 사진)
+    // 회원 정보 수정 (닉네임, 소개)
     @Transactional
-    public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request, MultipartFile image) throws IOException {
+    public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request) {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
@@ -67,13 +67,27 @@ public class UserService {
             throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
         }
 
-        String profileImages = null;
-        if (!image.isEmpty()) {
-            profileImages = s3UploadService.uploadProfile(image, "profileImage");
-        }
+        // 유저 수정
+        target.updateUser(request);
+
+        // DB로 갱신
+        User updatedUser = userRepository.save(target);
+
+        // DTO로 변경하여 반환
+        return UserResponse.createUserDto(updatedUser, "유저 정보 수정 성공");
+    }
+
+    // 프로필 사진 수정
+    @Transactional
+    public UserResponse updateProfileImage(UserDetailsImpl userDetails,MultipartFile image) throws IOException {
+        // 유저 조회 예외 발생
+        User target = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+
+        String profileImages = s3UploadService.uploadProfile(image, "profileImage");
 
         // 유저 수정
-        target.updateUser(request, profileImages);
+        target.updateProfileImage(profileImages);
 
         // DB로 갱신
         User updatedUser = userRepository.save(target);
