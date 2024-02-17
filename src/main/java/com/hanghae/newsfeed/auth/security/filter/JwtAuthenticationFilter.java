@@ -4,6 +4,7 @@ import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,23 +31,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            String token = null;
+
+            // 헤더에서 토큰 추출
             final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            final String token = parseBearerToken(authorizationHeader);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
+                token = authorizationHeader.substring(6);
+            }
 
-            // 토큰에서 이메일 추출, 이메일 사용해서 사용자 정보 가져옴
-            String email = jwtTokenProvider.getEmail(token, JwtTokenType.ACCESS);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            // 헤더에 토큰이 없으면 쿠키에서 토큰 추출
+            if (token == null) {
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if (cookie.getName().equals("accessToken")) {
+                            token = cookie.getValue();
+                            break;
+                        }
+                    }
+                }
+            }
 
-            // 사용자 정보 기반으로 인증 객체 생성
-            AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    token,
-                    userDetails.getAuthorities()
-            );
+            if (token != null) {
+                // 토큰에서 이메일 추출, 이메일 사용해서 사용자 정보 가져옴
+                String email = jwtTokenProvider.getEmail(token, JwtTokenType.ACCESS);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // 사용자 정보 기반으로 인증 객체 생성
+                AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        token,
+                        userDetails.getAuthorities()
+                );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
