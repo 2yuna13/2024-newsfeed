@@ -1,14 +1,16 @@
 package com.hanghae.newsfeed.user.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+@Slf4j
 @Controller
 public class UserPageController {
 
-    @GetMapping("/hi")
+    @GetMapping("/home")
     public String niceToMeetYou() {
-            return "main/greetings";
+        return "main/home";
     }
 
     @GetMapping("/login-page")

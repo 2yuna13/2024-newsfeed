@@ -6,6 +6,8 @@
     <title>Login Page</title>
     <!--favicon.ico-->
     <link rel="icon" href="data:;base64,=">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.0/dist/js.cookie.min.js"></script>
 </head>
 
 <body>
@@ -22,58 +24,43 @@
 </form>
 <a href="/signup-page">회원가입</a>
 
-<Script>
-    {
+<script>
+    $(document).ready(function() {
         // 로그인 버튼 변수화
-        const LoginBtn = document.querySelector("#login-btn");
+        const LoginBtn = $("#login-btn");
 
         // 로그인 클릭 이벤트 감지!
-        LoginBtn.addEventListener("click", function () {
+        LoginBtn.on("click", function () {
             // 사용자 객체 생성
             const user = {
-                email: document.querySelector("#user-email").value,
-                password: document.querySelector("#user-password").value
+                email: $("#user-email").val(),
+                password: $("#user-password").val()
             };
 
-            console.log(user);
-
-            // fetch() - 비동기 통신을 위한 API
             const url = "/api/auth/login";
-            fetch(url, {
-                method: "post",
-                body: JSON.stringify(user),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then(response => {
-                if (response.ok) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(user),
+                contentType: 'application/json',
+                success: function(response, textStatus, request) {
                     // 헤더에서 토큰 추출
-                    const tokenHeader = response.headers.get("Authorization");
-                    const token = tokenHeader ? tokenHeader.substring(6) : null;
+                    const tokenHeader = request.getResponseHeader("Authorization");
+                    const token = tokenHeader ? tokenHeader.substring(7) : null;
 
                     // 토큰을 쿠키에 저장
-                    setCookie("accessToken", token, 7);
+                    Cookies.set("accessToken", token, { expires: 7, path: '/' });
 
                     alert("로그인 성공");
-                    window.location.href = "/hi";
-                } else {
-                    response.json().then(errorData => {
-                        alert(`로그인 실패: ${errorData.message}`);
-                        throw new Error("로그인 실패");
-                    });
+                    window.location.href = "/home";
+                },
+                error: function(jqXHR) {
+                    alert(`로그인 실패: ${jqXHR.responseJSON.message}`);
+                    console.error("로그인 실패");
                 }
-            }).catch(error => {
-                console.error(error);
             });
         });
-
-        function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = name + "=" + value + ";" + expires + ";path=/";
-        }
-    }
+    });
 </script>
 </body>
 

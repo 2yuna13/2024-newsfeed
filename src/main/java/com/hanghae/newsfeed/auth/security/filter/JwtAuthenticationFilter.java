@@ -35,8 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 헤더에서 토큰 추출
             final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
-                token = authorizationHeader.substring(6);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                token = parseBearerToken(authorizationHeader);
             }
 
             // 헤더에 토큰이 없으면 쿠키에서 토큰 추출
