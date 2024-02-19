@@ -1,7 +1,7 @@
 package com.hanghae.newsfeed.follow.controller;
 
 import com.hanghae.newsfeed.follow.dto.response.FollowResponse;
-import com.hanghae.newsfeed.follow.service.FollowService;
+import com.hanghae.newsfeed.follow.service.impl.FollowServiceImpl;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/follows")
 public class FollowController {
-    private final FollowService followService;
+    private final FollowServiceImpl followService;
 
     // 팔로우
     @PostMapping("/{followingId}")

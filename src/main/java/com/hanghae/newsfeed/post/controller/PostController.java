@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.post.controller;
 
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
-import com.hanghae.newsfeed.post.service.PostService;
+import com.hanghae.newsfeed.post.service.impl.PostServiceImpl;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -20,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    private final PostService postService;
+    private final PostServiceImpl postService;
 
     // 게시물 목록 조회
     @GetMapping

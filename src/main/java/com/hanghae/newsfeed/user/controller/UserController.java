@@ -5,7 +5,7 @@ import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.dto.response.UserResponse;
-import com.hanghae.newsfeed.user.service.UserService;
+import com.hanghae.newsfeed.user.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     // 회원 정보 조회
     @GetMapping("/profile")
