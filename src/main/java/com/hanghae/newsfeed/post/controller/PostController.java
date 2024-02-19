@@ -41,7 +41,7 @@ public class PostController {
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestBody @Valid PostRequest request
-    ) throws IOException {
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request));
     }
 

@@ -4,6 +4,7 @@ import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
 import com.hanghae.newsfeed.comment.service.CommentService;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class CommentController {
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody CommentRequest request
+            @RequestBody @Valid CommentRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, userDetails, request));
     }
@@ -43,7 +44,7 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long commentId,
-            @RequestBody CommentRequest request
+            @RequestBody @Valid CommentRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(userDetails, commentId, request));
     }

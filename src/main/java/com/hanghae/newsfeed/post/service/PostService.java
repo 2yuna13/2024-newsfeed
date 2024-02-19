@@ -45,7 +45,7 @@ public class PostService {
 
     // 게시물 작성
     @Transactional
-    public PostResponse createPost(UserDetailsImpl userDetails, PostRequest request) throws IOException {
+    public PostResponse createPost(UserDetailsImpl userDetails, PostRequest request) {
         // 유저 조회 예외 발생
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));

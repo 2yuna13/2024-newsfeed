@@ -29,7 +29,7 @@ public class AuthController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @RequestBody LoginRequest request,
+            @RequestBody @Valid LoginRequest request,
             HttpServletResponse response
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(request, response));
