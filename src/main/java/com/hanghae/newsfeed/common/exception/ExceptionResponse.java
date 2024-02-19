@@ -2,17 +2,12 @@ package com.hanghae.newsfeed.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class ExceptionResponse {
-    private Boolean ok;
-    private int statusCode;
+    private CustomErrorCode errorCode;
     private String message;
-
-    public ExceptionResponse(String message, int statusCode) {
-        this.ok = false;
-        this.message = message;
-        this.statusCode = statusCode;
-    }
 }

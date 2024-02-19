@@ -7,16 +7,16 @@ import com.hanghae.newsfeed.auth.dto.response.LogoutResponse;
 import com.hanghae.newsfeed.auth.dto.response.SignupResponse;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenType;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
 import com.hanghae.newsfeed.common.redis.RedisService;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +39,12 @@ public class AuthService {
 
         // 이메일 중복 확인
         if (userRepository.existsByEmail(email)){
-            throw new HttpException(false, "중복된 이메일이 존재합니다.", HttpStatus.BAD_REQUEST);
-        };
+            throw new CustomException(CustomErrorCode.DUPLICATED_EMAIL);
+        }
 
         // 닉네임 중복 확인
         if (userRepository.existsByNickname(nickname)) {
-            throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.DUPLICATED_NICKNAME);
         }
 
         // 유저 엔티티 생성
@@ -71,16 +71,16 @@ public class AuthService {
         String password = request.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new HttpException(false, "비밀번호가 일치하지 않습니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.PASSWORD_NOT_MATCH);
         }
 
         // 탈퇴한 사용자인지 확인
         if (!user.getActive()) {
-            throw new HttpException(false, "해당 계정은 탈퇴되었습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.USER_DEACTIVATED);
         }
 
         UserRoleEnum role = user.getRole();
@@ -102,11 +102,11 @@ public class AuthService {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
 
         if (redisService.keyExists(accessToken)) {
-            throw new HttpException(false, "이미 로그아웃한 사용자입니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.ALREADY_LOGOUT);
         }
 
         if (!jwtTokenProvider.isExpired(accessToken, JwtTokenType.ACCESS)) {
-            throw new HttpException(false, "토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(CustomErrorCode.TOKEN_EXPIRED);
         }
 
         String email = jwtTokenProvider.getEmail(accessToken, JwtTokenType.ACCESS);

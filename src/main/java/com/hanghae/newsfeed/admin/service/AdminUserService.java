@@ -2,12 +2,12 @@ package com.hanghae.newsfeed.admin.service;
 
 import com.hanghae.newsfeed.admin.dto.request.AdminUserRequest;
 import com.hanghae.newsfeed.admin.dto.response.AdminUserResponse;
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,16 +31,16 @@ public class AdminUserService {
     public AdminUserResponse updateUserRoleAndStatus(Long userId, AdminUserRequest request) {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userId)
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 이미 탈퇴한 회원은 수정 불가능
         if (!target.getActive()) {
-            throw new HttpException(false, "이미 탈퇴한 회원입니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.USER_DEACTIVATED);
         }
 
         // 관리자의 role과 active 수정 불가능
         if (target.getRole() == UserRoleEnum.ADMIN) {
-            throw new HttpException(false, "관리자의 권한은 수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.ADMIN_CANNOT_BE_MODIFIED);
         }
 
         // 유저 수정
