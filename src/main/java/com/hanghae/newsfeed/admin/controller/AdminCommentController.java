@@ -1,9 +1,9 @@
 package com.hanghae.newsfeed.admin.controller;
 
-import com.hanghae.newsfeed.admin.service.AdminCommentService;
+import com.hanghae.newsfeed.admin.service.impl.AdminCommentServiceImpl;
 import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
-import com.hanghae.newsfeed.comment.service.CommentService;
+import com.hanghae.newsfeed.comment.service.impl.CommentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admins/comments")
 public class AdminCommentController {
-    private final CommentService commentService;
-    private final AdminCommentService adminCommentService;
+    private final CommentServiceImpl commentService;
+    private final AdminCommentServiceImpl adminCommentService;
 
     // 댓글 목록 조회
     @GetMapping("/{postId}")

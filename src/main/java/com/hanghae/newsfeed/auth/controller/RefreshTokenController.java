@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.auth.controller;
 
 import com.hanghae.newsfeed.auth.dto.response.RefreshToken;
 import com.hanghae.newsfeed.auth.security.jwt.JwtTokenProvider;
-import com.hanghae.newsfeed.auth.service.RefreshTokenService;
+import com.hanghae.newsfeed.auth.service.impl.RefreshTokenServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class RefreshTokenController {
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenServiceImpl refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
 
     // access 토큰 재발급

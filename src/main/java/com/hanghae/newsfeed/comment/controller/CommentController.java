@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.comment.controller;
 
 import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
-import com.hanghae.newsfeed.comment.service.CommentService;
+import com.hanghae.newsfeed.comment.service.impl.CommentServiceImpl;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
-    private final CommentService commentService;
+    private final CommentServiceImpl commentService;
 
     // 댓글 목록 조회
     @GetMapping("/{postId}")

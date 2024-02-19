@@ -2,7 +2,7 @@ package com.hanghae.newsfeed.post.controller;
 
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.post.dto.response.MultimediaResponse;
-import com.hanghae.newsfeed.post.service.MultimediaService;
+import com.hanghae.newsfeed.post.service.impl.MultimediaServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/multimedia")
 public class MultimediaController {
-    private final MultimediaService multimediaService;
+    private final MultimediaServiceImpl multimediaService;
 
     // 게시물 멀티미디어 조회
     @GetMapping("/{postId}")
