@@ -1,13 +1,13 @@
 package com.hanghae.newsfeed.admin.service;
 
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +20,7 @@ public class AdminPostService {
     public PostResponse updatePost(Long postId, PostRequest request) {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 수정
         target.updatePost(request);
@@ -36,7 +36,7 @@ public class AdminPostService {
     public PostResponse deletePost(Long postId) {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 삭제
         postRepository.delete(target);

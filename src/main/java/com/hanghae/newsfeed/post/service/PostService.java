@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.post.service;
 
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
@@ -11,7 +12,6 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class PostService {
     public PostResponse getPost(Long postId) {
         // 게시물 조회 예외 발생
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         return PostResponse.createPostDto(post, "게시물 조회 성공");
     }
@@ -48,7 +48,7 @@ public class PostService {
     public PostResponse createPost(UserDetailsImpl userDetails, PostRequest request) throws IOException {
         // 유저 조회 예외 발생
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 게시물 엔티티 생성
         Post post = new Post(user, request.getTitle(), request.getContent());
@@ -63,11 +63,11 @@ public class PostService {
     public PostResponse updatePost(UserDetailsImpl userDetails, Long postId, PostRequest request) {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new HttpException(false, "게시물 수정 권한이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.NO_EDIT_PERMISSION);
         }
 
         // 게시물 수정
@@ -84,11 +84,11 @@ public class PostService {
     public PostResponse deletePost(UserDetailsImpl userDetails, Long postId) {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new HttpException(false, "게시물 삭제 권한이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.NO_DELETE_PERMISSION);
         }
         
         // 게시물 삭제

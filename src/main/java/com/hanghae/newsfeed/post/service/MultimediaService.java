@@ -2,7 +2,8 @@ package com.hanghae.newsfeed.post.service;
 
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.common.aws.S3UploadService;
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.post.dto.response.MultimediaResponse;
 import com.hanghae.newsfeed.post.entity.Multimedia;
 import com.hanghae.newsfeed.post.entity.Post;
@@ -10,7 +11,6 @@ import com.hanghae.newsfeed.post.repository.MultimediaRepository;
 import com.hanghae.newsfeed.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +28,10 @@ public class MultimediaService {
 
     // 게시물 멀티미디어 조회
     public List<MultimediaResponse> getMultimediaList(Long postId) {
+        // 게시물 조회 예외 발생
+        postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
+
         List<Multimedia> multimediaList = multimediaRepository.findByPostId(postId);
 
         return multimediaList.stream()
@@ -40,11 +44,11 @@ public class MultimediaService {
     public List<MultimediaResponse> updatePostMultimedia(UserDetailsImpl userDetails, Long postId, List<MultipartFile> files) throws IOException {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new HttpException(false, "게시물 수정 권한이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.NO_EDIT_PERMISSION);
         }
 
         // 해당 게시물 멀티미디어 삭제
@@ -76,11 +80,11 @@ public class MultimediaService {
     public List<MultimediaResponse> deleteMultimedia(UserDetailsImpl userDetails, Long postId) {
         // 게시물 조회 예외 발생
         Post target = postRepository.findById(postId)
-                .orElseThrow(() -> new HttpException(false, "등록된 게시물이 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
         // 게시물 작성자와 현재 로그인한 사용자의 일치 여부 확인
         if (!target.getUser().getId().equals(userDetails.getId())) {
-            throw new HttpException(false, "게시물 삭제 권한이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.NO_DELETE_PERMISSION);
         }
 
         List<Multimedia> multimediaList = multimediaRepository.findByPostId(postId);
