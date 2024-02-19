@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.follow.service;
 
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.follow.dto.response.FollowResponse;
 import com.hanghae.newsfeed.follow.entity.Follow;
 import com.hanghae.newsfeed.follow.repository.FollowRepository;
@@ -12,7 +13,6 @@ import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,16 +30,16 @@ public class FollowService {
     public FollowResponse followUser(Long followingId, UserDetailsImpl userDetails) {
         // 사용자 확인
         User follower = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 본인인지 아닌지 확인
         if (!follower.equals(following)) {
             // 기존 팔로우 여부 확인
             if (followRepository.existsByFollowerAndFollowing(follower, following)) {
-                throw new HttpException(false, "이미 팔로우한 유저입니다.", HttpStatus.BAD_REQUEST);
+                throw new CustomException(CustomErrorCode.ALREADY_FOLLOWING);
             }
 
             // 팔로우 등록
@@ -48,7 +48,7 @@ public class FollowService {
 
             return new FollowResponse(follower.getId(), following.getId(), "팔로우 성공");
         } else{
-            throw new HttpException(false, "자신을 팔로우 할 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.CANNOT_FOLLOW_SELF);
         }
     }
 
@@ -57,10 +57,10 @@ public class FollowService {
     public FollowResponse unfollowUser(Long followingId, UserDetailsImpl userDetails) {
         // 사용자 확인
         User follower = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 기존 팔로우 여부 확인
         if (followRepository.existsByFollowerAndFollowing(follower, following)) {
@@ -70,7 +70,7 @@ public class FollowService {
 
             return new FollowResponse(follower.getId(), following.getId(), "팔로우 취소 성공");
         } else {
-            throw new HttpException(false, "해당 유저를 팔로우 하지 않았습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.NO_FOLLOW_YET);
         } 
     }
     
@@ -78,7 +78,7 @@ public class FollowService {
     public List<FollowResponse> followingList(UserDetailsImpl userDetails) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         List<Follow> followingList = followRepository.findByFollower(currentUser);
 
@@ -92,7 +92,7 @@ public class FollowService {
     public List<FollowResponse> followerList(UserDetailsImpl userDetails) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         List<Follow> followerList = followRepository.findByFollowing(currentUser);
 
@@ -105,7 +105,7 @@ public class FollowService {
     public List<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 팔로우 목록
         List<Follow> followingList = followRepository.findByFollower(currentUser);

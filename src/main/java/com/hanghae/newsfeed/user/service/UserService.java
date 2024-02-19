@@ -1,7 +1,8 @@
 package com.hanghae.newsfeed.user.service;
 
 import com.hanghae.newsfeed.common.aws.S3UploadService;
-import com.hanghae.newsfeed.common.exception.HttpException;
+import com.hanghae.newsfeed.common.exception.CustomErrorCode;
+import com.hanghae.newsfeed.common.exception.CustomException;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.post.repository.PostRepository;
@@ -16,7 +17,6 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +38,7 @@ public class UserService {
     // 회원 정보 조회
     public UserResponse getUser(UserDetailsImpl userDetails) {
         User user =  userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         return UserResponse.createUserDto(user, "유저 정보 조회 성공");
     }
@@ -46,7 +46,7 @@ public class UserService {
     // 내가 작성한 게시물 조회
     public List<PostResponse> getPostsByUserId(UserDetailsImpl userDetails) {
         User user =  userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         List<Post> allPosts = postRepository.findByUserId(user.getId());
 
@@ -60,11 +60,11 @@ public class UserService {
     public UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest request) {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 닉네임 중복 확인
         if (userRepository.existsByNickname(request.getNickname())) {
-            throw new HttpException(false, "중복된 닉네임이 존재합니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.DUPLICATED_NICKNAME);
         }
 
         // 유저 수정
@@ -82,7 +82,7 @@ public class UserService {
     public UserResponse updateProfileImage(UserDetailsImpl userDetails,MultipartFile image) throws IOException {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         String profileImages = s3UploadService.uploadProfile(image, "profileImage");
 
@@ -101,11 +101,11 @@ public class UserService {
     public UserResponse updatePassword(UserDetailsImpl userDetails, PasswordUpdateRequest request) {
         // 유저 조회 예외 발생
         User target = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new HttpException(false, "등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(request.getPassword(), target.getPassword())) {
-            throw new HttpException(false, "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.PASSWORD_NOT_MATCH);
         }
 
         // 최신 비밀번호 3개 가져와서 중복 확인
@@ -115,7 +115,7 @@ public class UserService {
                 .anyMatch(pwHistory -> bCryptPasswordEncoder.matches(request.getNewPassword(), pwHistory.getPassword()));
 
         if (isPasswordDuplicate) {
-            throw new HttpException(false, "최근에 사용한 비밀번호와 중복되어 사용할 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException(CustomErrorCode.DUPLICATED_RECENT_PASSWORD);
         }
 
         // 비밀번호 수정
