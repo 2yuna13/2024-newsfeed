@@ -2,6 +2,7 @@ package com.hanghae.newsfeed.auth.security;
 
 import com.hanghae.newsfeed.user.entity.User;
 import lombok.Builder;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+@ToString
 public class UserDetailsImpl implements UserDetails {
     private final Long id;
     private final String email;

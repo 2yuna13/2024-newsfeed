@@ -4,8 +4,10 @@ import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class AdminUserRequest {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;

@@ -31,6 +31,10 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 목록 조회
     @Override
     public List<CommentResponse> getAllComments(Long postId) {
+        // 게시물 조회 예외 발생
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
+
         List<Comment> allComments = commentRepository.findByPostId(postId);
 
         return allComments.stream()
