@@ -53,8 +53,9 @@ public interface UserService {
 
     /**
      * 회원 목록 조회
+     * @param nickname 닉네임 검색 정보
      * @param pageable 페이징 정보
      * @return 활성화된 회원 목록
      */
-    Page<UserResponse> getActiveUsers(Pageable pageable);
+    Page<UserResponse> getActiveUsers(String nickname, Pageable pageable);
 }

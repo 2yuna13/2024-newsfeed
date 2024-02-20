@@ -75,8 +75,9 @@ public class UserController {
     // 회원 목록 조회
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getAllUsers(
+            @RequestParam(required = false) String nickname,
             @SortDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers(nickname, pageable));
     }
 }
