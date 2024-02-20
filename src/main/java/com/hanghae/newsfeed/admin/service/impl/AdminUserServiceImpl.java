@@ -20,8 +20,13 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     // 전체 회원 목록 조회
     @Override
-    public Page<AdminUserResponse> getAllUsers(Pageable pageable) {
-        Page<User> allUsers = userRepository.findAll(pageable);
+    public Page<AdminUserResponse> getAllUsers(String nickname, Pageable pageable) {
+        Page<User> allUsers;
+        if (nickname!= null) {
+            allUsers = userRepository.searchByNickname(nickname, null, pageable);
+        } else {
+            allUsers = userRepository.findAll(pageable);
+        }
 
         return allUsers
                 .map(user -> AdminUserResponse.createAdminUserDto(user, "전체 회원 조회 성공"));

@@ -21,9 +21,10 @@ public class AdminUserController {
     // 회원 목록 조회
     @GetMapping("/users")
     public ResponseEntity<Page<AdminUserResponse>> getAllUsers(
+            @RequestParam(required = false) String nickname,
             @SortDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminUserService.getAllUsers(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(adminUserService.getAllUsers(nickname, pageable));
     }
 
     // 회원 권한 수정(USER -> ADMIN / active = false)

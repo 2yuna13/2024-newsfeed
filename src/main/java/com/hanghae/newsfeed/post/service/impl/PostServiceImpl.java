@@ -26,8 +26,13 @@ public class PostServiceImpl implements PostService {
 
     // 게시물 목록 조회
     @Override
-    public Page<PostResponse> getAllPosts(Pageable pageable) {
-        Page<Post> allPosts = postRepository.findAll(pageable);
+    public Page<PostResponse> getAllPosts(String keyword,Pageable pageable) {
+        Page<Post> allPosts;
+        if (keyword!= null) {
+            allPosts = postRepository.searchByTitleAndContent(keyword, pageable);
+        } else {
+            allPosts = postRepository.findAll(pageable);
+        }
 
         return allPosts
                 .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"));

@@ -9,10 +9,11 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
     /**
      * 게시물 목록 조회
+     * @param keyword 검색 정보
      * @param pageable 페이징 정보
      * @return 게시물 목록
      */
-    Page<PostResponse> getAllPosts(Pageable pageable);
+    Page<PostResponse> getAllPosts(String keyword, Pageable pageable);
 
     /**
      * 게시물 조회

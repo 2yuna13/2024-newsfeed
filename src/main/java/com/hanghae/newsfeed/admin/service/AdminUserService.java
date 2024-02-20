@@ -8,10 +8,11 @@ import org.springframework.data.domain.Pageable;
 public interface AdminUserService {
     /**
      * 전체 회원 목록 조회
+     * @param nickname 닉네임 검색 정보
      * @param pageable 페이징 정보
      * @return 회원 목록
      */
-    Page<AdminUserResponse> getAllUsers(Pageable pageable);
+    Page<AdminUserResponse> getAllUsers(String nickname, Pageable pageable);
 
     /**
      * 회원 권한 수정

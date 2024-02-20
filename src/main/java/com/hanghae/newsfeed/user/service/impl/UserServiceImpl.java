@@ -135,9 +135,13 @@ public class UserServiceImpl implements UserService {
 
     // 회원 목록 조회
     @Override
-    public Page<UserResponse> getActiveUsers(Pageable pageable) {
-
-        Page<User> activeUsers = userRepository.findByActiveTrue(pageable);
+    public Page<UserResponse> getActiveUsers(String nickname, Pageable pageable) {
+        Page<User> activeUsers;
+        if (nickname != null) {
+            activeUsers = userRepository.searchByNickname(nickname, true, pageable);
+        } else {
+            activeUsers = userRepository.findByActiveTrue(pageable);
+        }
 
         return activeUsers
                 .map(user -> UserResponse.createUserDto(user, "유저 조회 성공"));
