@@ -3,15 +3,16 @@ package com.hanghae.newsfeed.post.service;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
     /**
      * 게시물 목록 조회
+     * @param pageable 페이징 정보
      * @return 게시물 목록
      */
-    List<PostResponse> getAllPosts();
+    Page<PostResponse> getAllPosts(Pageable pageable);
 
     /**
      * 게시물 조회

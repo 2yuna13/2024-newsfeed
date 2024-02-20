@@ -7,12 +7,14 @@ import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,8 +25,10 @@ public class PostController {
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(pageable));
     }
 
     // 게시물 조회

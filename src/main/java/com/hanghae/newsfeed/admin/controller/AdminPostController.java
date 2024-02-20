@@ -7,6 +7,10 @@ import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.service.impl.MultimediaServiceImpl;
 import com.hanghae.newsfeed.post.service.impl.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +27,10 @@ public class AdminPostController {
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(pageable));
     }
 
     // 게시물 조회
