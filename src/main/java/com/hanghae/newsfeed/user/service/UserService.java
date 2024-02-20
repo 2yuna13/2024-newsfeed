@@ -5,10 +5,11 @@ import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.dto.response.UserResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface UserService {
     /**
@@ -21,9 +22,10 @@ public interface UserService {
     /**
      * 내가 작성한 게시물 조회
      * @param userDetails 사용자 상세 정보
+     * @param pageable 페이징 정보
      * @return 사용자가 작성한 게시물 목록
      */
-    List<PostResponse> getPostsByUserId(UserDetailsImpl userDetails);
+    Page<PostResponse> getPostsByUserId(UserDetailsImpl userDetails, Pageable pageable);
 
     /**
      * 회원 정보 수정 (닉네임, 소개)
@@ -51,7 +53,8 @@ public interface UserService {
 
     /**
      * 회원 목록 조회
+     * @param pageable 페이징 정보
      * @return 활성화된 회원 목록
      */
-    List<UserResponse> getActiveUsers();
+    Page<UserResponse> getActiveUsers(Pageable pageable);
 }

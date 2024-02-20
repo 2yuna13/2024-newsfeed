@@ -9,10 +9,9 @@ import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +20,11 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     // 전체 회원 목록 조회
     @Override
-    public List<AdminUserResponse> getAllUsers() {
-        List<User> allUsers = userRepository.findAll();
+    public Page<AdminUserResponse> getAllUsers(Pageable pageable) {
+        Page<User> allUsers = userRepository.findAll(pageable);
 
-        return allUsers.stream()
-                .map(user -> AdminUserResponse.createAdminUserDto(user, "전체 회원 조회 성공"))
-                .collect(Collectors.toList());
+        return allUsers
+                .map(user -> AdminUserResponse.createAdminUserDto(user, "전체 회원 조회 성공"));
     }
 
     // 회원 권한 수정(USER -> ADMIN / active = false)
