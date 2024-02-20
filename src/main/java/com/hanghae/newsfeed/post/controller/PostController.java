@@ -26,9 +26,10 @@ public class PostController {
     // 게시물 목록 조회
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @RequestParam(required = false) String keyword,
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(keyword, pageable));
     }
 
     // 게시물 조회
