@@ -14,6 +14,8 @@ import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,36 +81,34 @@ public class FollowServiceImpl implements FollowService {
     
     // 팔로잉 목록 조회
     @Override
-    public List<FollowResponse> followingList(UserDetailsImpl userDetails) {
+    public Page<FollowResponse> followingList(UserDetailsImpl userDetails, Pageable pageable) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
-        List<Follow> followingList = followRepository.findByFollower(currentUser);
+        Page<Follow> followingList = followRepository.findByFollower(currentUser, pageable);
 
-        return followingList.stream()
-                .map(follow -> new FollowResponse(follow.getFollower().getId(), follow.getFollowing().getId(), "팔로잉 목록 조회 성공"))
-                .collect(Collectors.toList());
+        return followingList
+                .map(follow -> new FollowResponse(follow.getFollower().getId(), follow.getFollowing().getId(), "팔로잉 목록 조회 성공"));
     }
     
     
     // 팔로워 목록 조회
     @Override
-    public List<FollowResponse> followerList(UserDetailsImpl userDetails) {
+    public Page<FollowResponse> followerList(UserDetailsImpl userDetails, Pageable pageable) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
-        List<Follow> followerList = followRepository.findByFollowing(currentUser);
+        Page<Follow> followerList = followRepository.findByFollowing(currentUser, pageable);
 
-        return followerList.stream()
-                .map(follow -> new FollowResponse(follow.getFollower().getId(), follow.getFollowing().getId(), "팔로워 목록 조회 성공"))
-                .collect(Collectors.toList());
+        return followerList
+                .map(follow -> new FollowResponse(follow.getFollower().getId(), follow.getFollowing().getId(), "팔로워 목록 조회 성공"));
     }
 
     // 내가 팔로우한 유저들이 작성한 게시물 조회
     @Override
-    public List<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails) {
+    public Page<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails, Pageable pageable) {
         // 사용자 확인
         User currentUser = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
@@ -122,10 +122,9 @@ public class FollowServiceImpl implements FollowService {
                 .collect(Collectors.toList());
 
         // 각 유저들의 게시물 조회
-        List<Post> postsFromFollowingUsers = postRepository.findByUserIn(followingUsers);
+        Page<Post> postsFromFollowingUsers = postRepository.findByUserIn(followingUsers, pageable);
 
-        return postsFromFollowingUsers.stream()
-                .map(post -> PostResponse.createPostDto(post, "팔로잉 게시물 조회 성공"))
-                .collect(Collectors.toList());
+        return postsFromFollowingUsers
+                .map(post -> PostResponse.createPostDto(post, "팔로잉 게시물 조회 성공"));
     }
 }

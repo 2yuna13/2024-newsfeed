@@ -3,8 +3,9 @@ package com.hanghae.newsfeed.follow.service;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.follow.dto.response.FollowResponse;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface FollowService {
     /**
@@ -26,21 +27,24 @@ public interface FollowService {
     /**
      * 팔로잉 목록 조회
      * @param userDetails 사용자 상세 정보
+     * @param pageable 페이징 정보
      * @return 팔로잉 목록
      */
-    List<FollowResponse> followingList(UserDetailsImpl userDetails);
+    Page<FollowResponse> followingList(UserDetailsImpl userDetails, Pageable pageable);
 
     /**
      * 팔로워 목록 조회
      * @param userDetails 사용자 상세 정보
+     * @param pageable 페이징 정보
      * @return 팔로워 목록
      */
-    List<FollowResponse> followerList(UserDetailsImpl userDetails);
+    Page<FollowResponse> followerList(UserDetailsImpl userDetails, Pageable pageable);
 
     /**
      * 팔로우한 유저들이 작성한 게시물 조회
      * @param userDetails 사용자 상세 정보
+     * @param pageable 페이징 정보
      * @return 팔로우한 유저들의 게시물 목록
      */
-    List<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails);
+    Page<PostResponse> getPostsFromFollowingUsers(UserDetailsImpl userDetails, Pageable pageable);
 }
