@@ -13,10 +13,9 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,12 +26,11 @@ public class PostServiceImpl implements PostService {
 
     // 게시물 목록 조회
     @Override
-    public List<PostResponse> getAllPosts() {
-        List<Post> allPosts = postRepository.findAll();
+    public Page<PostResponse> getAllPosts(Pageable pageable) {
+        Page<Post> allPosts = postRepository.findAll(pageable);
 
-        return allPosts.stream()
-                .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"))
-                .collect(Collectors.toList());
+        return allPosts
+                .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"));
     }
 
     // 게시물 조회

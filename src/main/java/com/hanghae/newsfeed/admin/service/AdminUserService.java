@@ -2,15 +2,16 @@ package com.hanghae.newsfeed.admin.service;
 
 import com.hanghae.newsfeed.admin.dto.request.AdminUserRequest;
 import com.hanghae.newsfeed.admin.dto.response.AdminUserResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AdminUserService {
     /**
      * 전체 회원 목록 조회
+     * @param pageable 페이징 정보
      * @return 회원 목록
      */
-    List<AdminUserResponse> getAllUsers();
+    Page<AdminUserResponse> getAllUsers(Pageable pageable);
 
     /**
      * 회원 권한 수정

@@ -18,13 +18,14 @@ import com.hanghae.newsfeed.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,15 +48,14 @@ public class UserServiceImpl implements UserService {
 
     // 내가 작성한 게시물 조회
     @Override
-    public List<PostResponse> getPostsByUserId(UserDetailsImpl userDetails) {
+    public Page<PostResponse> getPostsByUserId(UserDetailsImpl userDetails, Pageable pageable) {
         User user =  userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
-        List<Post> allPosts = postRepository.findByUserId(user.getId());
+        Page<Post> allPosts = postRepository.findByUserId(user.getId(), pageable);
 
-        return allPosts.stream()
-                .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"))
-                .collect(Collectors.toList());
+        return allPosts
+                .map(post -> PostResponse.createPostDto(post, "게시물 조회 성공"));
     }
 
     // 회원 정보 수정 (닉네임, 소개)
@@ -135,12 +135,11 @@ public class UserServiceImpl implements UserService {
 
     // 회원 목록 조회
     @Override
-    public List<UserResponse> getActiveUsers() {
+    public Page<UserResponse> getActiveUsers(Pageable pageable) {
 
-        List<User> activeUsers = userRepository.findByActiveTrue();
+        Page<User> activeUsers = userRepository.findByActiveTrue(pageable);
 
-        return activeUsers.stream()
-                .map(user -> UserResponse.createUserDto(user, "유저 조회 성공"))
-                .collect(Collectors.toList());
+        return activeUsers
+                .map(user -> UserResponse.createUserDto(user, "유저 조회 성공"));
     }
 }

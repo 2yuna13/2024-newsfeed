@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.post.entity;
 
 import com.hanghae.newsfeed.comment.entity.Comment;
+import com.hanghae.newsfeed.common.Timestamped;
 import com.hanghae.newsfeed.like.entity.PostLike;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.user.entity.User;
@@ -19,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "post")
-public class Post {
+public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

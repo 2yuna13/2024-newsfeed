@@ -3,16 +3,17 @@ package com.hanghae.newsfeed.comment.service;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
     /**
      * 댓글 목록 조회
      * @param postId 게시물 아이디
+     * @param pageable 페이징 정보
      * @return 해당 게시물 댓글 목록
      */
-    List<CommentResponse> getAllComments(Long postId);
+    Page<CommentResponse> getAllComments(Long postId, Pageable pageable);
 
     /**
      * 댓글 작성

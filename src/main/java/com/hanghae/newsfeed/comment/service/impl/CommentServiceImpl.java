@@ -15,10 +15,9 @@ import com.hanghae.newsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,16 +29,14 @@ public class CommentServiceImpl implements CommentService {
 
     // 댓글 목록 조회
     @Override
-    public List<CommentResponse> getAllComments(Long postId) {
+    public Page<CommentResponse> getAllComments(Long postId, Pageable pageable) {
         // 게시물 조회 예외 발생
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
+        postRepository.findById(postId).orElseThrow(() -> new CustomException(CustomErrorCode.POST_NOT_FOUND));
 
-        List<Comment> allComments = commentRepository.findByPostId(postId);
+        Page<Comment> allComments = commentRepository.findByPostId(postId, pageable);
 
-        return allComments.stream()
-                .map(comment -> CommentResponse.createCommentDto(comment, "댓글 조회 성공"))
-                .collect(Collectors.toList());
+        return allComments
+                .map(comment -> CommentResponse.createCommentDto(comment, "댓글 조회 성공"));
     }
 
     // 댓글 작성
