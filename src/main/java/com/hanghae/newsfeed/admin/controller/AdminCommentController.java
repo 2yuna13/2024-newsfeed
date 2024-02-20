@@ -5,11 +5,13 @@ import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
 import com.hanghae.newsfeed.comment.service.impl.CommentServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,10 +22,11 @@ public class AdminCommentController {
 
     // 댓글 목록 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<List<CommentResponse>> getAllComments(
-            @PathVariable Long postId
+    public ResponseEntity<Page<CommentResponse>> getAllComments(
+            @PathVariable Long postId,
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments(postId));
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments(postId, pageable));
     }
 
     // 댓글 수정
