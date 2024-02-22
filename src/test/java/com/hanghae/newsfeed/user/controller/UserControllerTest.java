@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
+import com.hanghae.newsfeed.user.entity.User;
+import com.hanghae.newsfeed.user.repository.UserRepository;
+import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +17,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -26,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.yml")
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserControllerTest {
 
     @Autowired
@@ -34,38 +44,54 @@ class UserControllerTest {
     @Autowired
     MockMvc mvc;
 
+    @Autowired
+    UserRepository userRepository;
+
     private static final String BASE_URL = "/api/users";
     private UserDetailsImpl userDetails;
 
     @BeforeEach
     void setUp() {
-        Long id = 4L;
-        String email = "test4@test.com";
-        String password = "qwe123!@#";
-        String nickname = "test4";
+        Long id = 1L;
+        String email = "test@test.com";
+        String encodedPassword = new BCryptPasswordEncoder().encode("qwe123!@#");
+        String nickname = "test";
         Set<SimpleGrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         userDetails = UserDetailsImpl.builder()
                 .id(id)
                 .email(email)
-                .password(password)
+                .password(encodedPassword)
                 .nickname(nickname)
                 .authorities(authorities)
                 .build();
+
+        User user = new User(email, nickname, encodedPassword, UserRoleEnum.USER, true);
+        user.updatePassword(encodedPassword);
+        userRepository.save(user);
+
+        // 유저 목록 조회 시 사용할 mock 데이터
+        userRepository.save(new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true));
+        userRepository.save(new User("user2@test.com", "user2", "password", UserRoleEnum.USER, true));
+        userRepository.save(new User("user3@test.com", "user3", "password", UserRoleEnum.USER, true));
     }
 
     @Test
     @Transactional
     @DisplayName("회원 정보 조회 성공 테스트")
     void getUser_success() throws Exception {
+        // given
+        User savedUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
+
         // then
         mvc.perform(get(BASE_URL + "/profile")
                         .with(user(userDetails)) // 사용자 정보를 시뮬레이션하기 위해 MockMvc의 user() 메소드 사용
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(userDetails.getEmail()))
-                .andExpect(jsonPath("$.nickname").value(userDetails.getUsername()))
+                .andExpect(jsonPath("$.email").value(savedUser.getEmail()))
+                .andExpect(jsonPath("$.nickname").value(savedUser.getNickname()))
                 .andExpect(jsonPath("$.msg").value("유저 정보 조회 성공"));
     }
 
@@ -165,7 +191,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(userDetails.getEmail()))
                 .andExpect(jsonPath("$.nickname").value(userDetails.getUsername()))
                 .andExpect(jsonPath("$.msg").value("비밀번호 수정 성공"));
-
     }
 
     @Test
@@ -248,7 +273,11 @@ class UserControllerTest {
         JsonNode jsonNode = objectMapper.readTree(responseJson);
 
         // 예상 결과와 일치하는지 확인
-        assertEquals("1test", jsonNode.get("content").get(0).get("nickname").asText());
+        assertEquals("test", jsonNode.get("content").get(0).get("nickname").asText());
+        assertEquals("user1", jsonNode.get("content").get(1).get("nickname").asText());
+        assertEquals("user2", jsonNode.get("content").get(2).get("nickname").asText());
+        assertEquals("user3", jsonNode.get("content").get(3).get("nickname").asText());
+        assertEquals(4, jsonNode.get("totalElements").asInt());
     }
 
     @Test
@@ -256,7 +285,7 @@ class UserControllerTest {
     @DisplayName("회원 목록 조회 성공 테스트 - 닉네임 검색")
     void getAllUsers_success_search() throws Exception {
         // given
-        String searchedNickname = "test";
+        String searchedNickname = "user";
 
         // then
         MvcResult result = mvc.perform(get(BASE_URL).with(user(userDetails))
@@ -272,6 +301,9 @@ class UserControllerTest {
         JsonNode jsonNode = objectMapper.readTree(responseJson);
 
         // 예상 결과와 일치하는지 확인
-        assertEquals("1test", jsonNode.get("content").get(0).get("nickname").asText());
+        assertEquals("user1", jsonNode.get("content").get(0).get("nickname").asText());
+        assertEquals("user2", jsonNode.get("content").get(1).get("nickname").asText());
+        assertEquals("user3", jsonNode.get("content").get(2).get("nickname").asText());
+        assertEquals(3, jsonNode.get("totalElements").asInt());
     }
 }
