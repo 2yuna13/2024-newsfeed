@@ -54,7 +54,8 @@ public class AuthServiceImpl implements AuthService {
                 email,
                 nickname,
                 encodingPassword,
-                UserRoleEnum.USER
+                UserRoleEnum.USER,
+                true
         );
 
         // 비밀번호 이력 저장

@@ -3,13 +3,20 @@ package com.hanghae.newsfeed.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.newsfeed.auth.dto.request.LoginRequest;
 import com.hanghae.newsfeed.auth.dto.request.SignupRequest;
+import com.hanghae.newsfeed.user.entity.User;
+import com.hanghae.newsfeed.user.repository.UserRepository;
+import com.hanghae.newsfeed.user.type.UserRoleEnum;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,6 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.yml")
+@ActiveProfiles("test")
 class AuthControllerTest {
 
     @Autowired
@@ -26,7 +35,21 @@ class AuthControllerTest {
     @Autowired
     MockMvc mvc;
 
+    @Autowired
+    UserRepository userRepository;
+
     private static final String BASE_URL = "/api/auth";
+
+    @BeforeEach
+    void setUp() {
+        String encodedPassword = new BCryptPasswordEncoder().encode("qwe123!@#");
+
+        // 탈퇴하지 않은 사용자
+        userRepository.save(new User("test@test.com", "test", encodedPassword, UserRoleEnum.USER, true));
+
+        // 탈퇴한 사용자
+        userRepository.save(new User("deactivated@test.com", "deactivated", encodedPassword, UserRoleEnum.USER, false));
+    }
 
     @Test
     @Transactional
@@ -260,7 +283,7 @@ class AuthControllerTest {
     @DisplayName("로그인 실패 테스트 - 탈퇴된 사용자")
     void login_fail_user_deactivated() throws Exception {
         // given
-        String deactivatedUserEmail = "test3@test.com";
+        String deactivatedUserEmail = "deactivated@test.com";
         String wrongPassword = "qwe123!@#";
 
         // when
