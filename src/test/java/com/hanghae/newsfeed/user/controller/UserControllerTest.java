@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
+//import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.yml")
 @ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserControllerTest {
 
     @Autowired
@@ -53,9 +53,9 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         Long id = 1L;
-        String email = "test@test.com";
+        String email = "1test@test.com";
         String encodedPassword = new BCryptPasswordEncoder().encode("qwe123!@#");
-        String nickname = "test";
+        String nickname = "1test";
         Set<SimpleGrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         userDetails = UserDetailsImpl.builder()
@@ -65,10 +65,6 @@ class UserControllerTest {
                 .nickname(nickname)
                 .authorities(authorities)
                 .build();
-
-        User user = new User(email, nickname, encodedPassword, UserRoleEnum.USER, true);
-        user.updatePassword(encodedPassword);
-        userRepository.save(user);
 
         // 유저 목록 조회 시 사용할 mock 데이터
         userRepository.save(new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true));
@@ -149,7 +145,7 @@ class UserControllerTest {
     @DisplayName("회원 정보 수정 실패 테스트 - 닉네임 중복")
     void updateUser_fail_nickname_duplicate() throws Exception {
         // given
-        String duplicatedNickname = "test";
+        String duplicatedNickname = "1test";
         String description = "test";
 
         // when
@@ -273,7 +269,7 @@ class UserControllerTest {
         JsonNode jsonNode = objectMapper.readTree(responseJson);
 
         // 예상 결과와 일치하는지 확인
-        assertEquals("test", jsonNode.get("content").get(0).get("nickname").asText());
+        assertEquals("1test", jsonNode.get("content").get(0).get("nickname").asText());
         assertEquals("user1", jsonNode.get("content").get(1).get("nickname").asText());
         assertEquals("user2", jsonNode.get("content").get(2).get("nickname").asText());
         assertEquals("user3", jsonNode.get("content").get(3).get("nickname").asText());
