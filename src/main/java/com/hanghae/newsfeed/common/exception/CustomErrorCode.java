@@ -14,7 +14,7 @@ public enum CustomErrorCode {
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일이 존재합니다."),
     DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "중복된 닉네임이 존재합니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 사용자가 없습니다."),
-    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다"),
+    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     DUPLICATED_RECENT_PASSWORD(HttpStatus.BAD_REQUEST, "최근에 사용한 비밀번호와 중복되어 사용할 수 없습니다."),
     USER_DEACTIVATED(HttpStatus.BAD_REQUEST, "해당 계정은 탈퇴되었습니다."),
     ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "이미 로그아웃한 사용자입니다."),
