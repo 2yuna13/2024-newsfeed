@@ -145,6 +145,7 @@ class PostControllerTest {
         mvc.perform(get(BASE_URL + "/" + savedPost.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userNickname").value(user.getNickname()))
                 .andExpect(jsonPath("$.title").value("title1"))
                 .andExpect(jsonPath("$.content").value("content1"))
                 .andExpect(jsonPath("$.msg").value("게시물 조회 성공"));

@@ -3,6 +3,8 @@ package com.hanghae.newsfeed.user.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
+import com.hanghae.newsfeed.post.entity.Post;
+import com.hanghae.newsfeed.post.repository.PostRepository;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.entity.User;
@@ -46,6 +48,9 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PostRepository postRepository;
 
     private static final String BASE_URL = "/api/users";
     private UserDetailsImpl userDetails;
@@ -91,11 +96,35 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.msg").value("유저 정보 조회 성공"));
     }
 
-//    @Test
-//    @Transactional
-//    @DisplayName("본인이 작성한 게시물 조회 성공 테스트")
-//    void getPostsByUserId() {
-//    }
+    @Test
+    @Transactional
+    @DisplayName("본인이 작성한 게시물 조회 성공 테스트")
+    void getPostsByUserId_success() throws Exception {
+        // given
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
+        postRepository.save(new Post(user, "title1", "content1"));
+        postRepository.save(new Post(user, "title2", "content2"));
+        postRepository.save(new Post(user, "title3", "content3"));
+
+        // then
+        MvcResult result = mvc.perform(get(BASE_URL + "/posts")
+                        .with(user(userDetails))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseJson = result.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseJson);
+
+        // 예상 결과와 일치하는지 확인
+        assertEquals("title3", jsonNode.get("content").get(0).get("title").asText());
+        assertEquals("title2", jsonNode.get("content").get(1).get("title").asText());
+        assertEquals("title1", jsonNode.get("content").get(2).get("title").asText());
+        assertEquals(3, jsonNode.get("totalElements").asInt());
+    }
 
     @Test
     @Transactional
