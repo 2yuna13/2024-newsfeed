@@ -42,7 +42,7 @@ public class FollowController {
     @GetMapping("/followings")
     public ResponseEntity<Page<FollowResponse>> getFollowingList(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            Pageable pageable
+            @SortDefault(sort = "following_id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(followService.followingList(userDetails, pageable));
     }
@@ -51,7 +51,7 @@ public class FollowController {
     @GetMapping("/followers")
     public ResponseEntity<Page<FollowResponse>> getFollowerList(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            Pageable pageable
+            @SortDefault(sort = "follower_id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(followService.followerList(userDetails, pageable));
     }
