@@ -2,30 +2,34 @@ package com.hanghae.newsfeed.post.controller;
 
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
-import com.hanghae.newsfeed.post.service.PostService;
+import com.hanghae.newsfeed.post.service.impl.PostServiceImpl;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    private final PostService postService;
+    private final PostServiceImpl postService;
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @RequestParam(required = false) String keyword,
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(keyword, pageable));
     }
 
     // 게시물 조회
@@ -41,7 +45,7 @@ public class PostController {
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestBody @Valid PostRequest request
-    ) throws IOException {
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userDetails, request));
     }
 

@@ -5,10 +5,14 @@ import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
 import com.hanghae.newsfeed.user.dto.request.PasswordUpdateRequest;
 import com.hanghae.newsfeed.user.dto.request.UserUpdateRequest;
 import com.hanghae.newsfeed.user.dto.response.UserResponse;
-import com.hanghae.newsfeed.user.service.UserService;
+import com.hanghae.newsfeed.user.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,14 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     // 회원 정보 조회
     @GetMapping("/profile")
@@ -35,10 +38,11 @@ public class UserController {
 
     // 내가 작성한 게시물 조회
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getPostsByUserId(
-            @AuthenticationPrincipal final UserDetailsImpl userDetails
+    public ResponseEntity<Page<PostResponse>> getPostsByUserId(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getPostsByUserId(userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getPostsByUserId(userDetails, pageable));
     }
 
     // 회원 정보 수정 (닉네임, 소개,)
@@ -70,7 +74,10 @@ public class UserController {
 
     // 회원 목록 조회
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers());
+    public ResponseEntity<Page<UserResponse>> getAllUsers(
+            @RequestParam(required = false) String nickname,
+            @SortDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getActiveUsers(nickname, pageable));
     }
 }

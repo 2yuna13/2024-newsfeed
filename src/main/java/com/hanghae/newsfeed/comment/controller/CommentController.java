@@ -2,30 +2,34 @@ package com.hanghae.newsfeed.comment.controller;
 
 import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
 import com.hanghae.newsfeed.comment.dto.response.CommentResponse;
-import com.hanghae.newsfeed.comment.service.CommentService;
+import com.hanghae.newsfeed.comment.service.impl.CommentServiceImpl;
 import com.hanghae.newsfeed.auth.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
-    private final CommentService commentService;
+    private final CommentServiceImpl commentService;
 
     // 댓글 목록 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<List<CommentResponse>> getAllComments(
-            @PathVariable Long postId
+    public ResponseEntity<Page<CommentResponse>> getAllComments(
+            @PathVariable Long postId,
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments(postId));
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments(postId, pageable));
     }
 
     // 댓글 작성
@@ -33,7 +37,7 @@ public class CommentController {
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable Long postId,
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
-            @RequestBody CommentRequest request
+            @RequestBody @Valid CommentRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, userDetails, request));
     }
@@ -43,7 +47,7 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @PathVariable Long commentId,
-            @RequestBody CommentRequest request
+            @RequestBody @Valid CommentRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(userDetails, commentId, request));
     }

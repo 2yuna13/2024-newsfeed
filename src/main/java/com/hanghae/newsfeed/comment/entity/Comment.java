@@ -1,6 +1,7 @@
 package com.hanghae.newsfeed.comment.entity;
 
 import com.hanghae.newsfeed.comment.dto.request.CommentRequest;
+import com.hanghae.newsfeed.common.Timestamped;
 import com.hanghae.newsfeed.like.entity.CommentLike;
 import com.hanghae.newsfeed.post.entity.Post;
 import com.hanghae.newsfeed.user.entity.User;
@@ -8,16 +9,18 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "comment")
-public class Comment {
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

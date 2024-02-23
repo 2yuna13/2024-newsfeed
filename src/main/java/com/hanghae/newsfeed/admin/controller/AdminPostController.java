@@ -1,12 +1,16 @@
 package com.hanghae.newsfeed.admin.controller;
 
-import com.hanghae.newsfeed.admin.service.AdminPostService;
+import com.hanghae.newsfeed.admin.service.impl.AdminPostServiceImpl;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.MultimediaResponse;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
-import com.hanghae.newsfeed.post.service.MultimediaService;
-import com.hanghae.newsfeed.post.service.PostService;
+import com.hanghae.newsfeed.post.service.impl.MultimediaServiceImpl;
+import com.hanghae.newsfeed.post.service.impl.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +21,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admins/posts")
 public class AdminPostController {
-    private final PostService postService;
-    private final AdminPostService adminPostService;
-    private final MultimediaService multimediaService;
+    private final PostServiceImpl postService;
+    private final AdminPostServiceImpl adminPostService;
+    private final MultimediaServiceImpl multimediaService;
 
     // 게시물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @RequestParam(required = false) String keyword,
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(keyword, pageable));
     }
 
     // 게시물 조회

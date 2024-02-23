@@ -10,12 +10,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
@@ -54,11 +56,12 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL)
     private List<Follow> followingList = new ArrayList<>();
 
-    public User(String email, String nickname, String password, UserRoleEnum role) {
+    public User(String email, String nickname, String password, UserRoleEnum role, boolean active) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.role = role;
+        this.active = active;
     }
 
     public void updateUser(UserUpdateRequest request) {

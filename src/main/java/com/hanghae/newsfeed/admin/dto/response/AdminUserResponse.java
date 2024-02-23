@@ -2,13 +2,11 @@ package com.hanghae.newsfeed.admin.dto.response;
 
 import com.hanghae.newsfeed.user.entity.User;
 import com.hanghae.newsfeed.user.type.UserRoleEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminUserResponse {
