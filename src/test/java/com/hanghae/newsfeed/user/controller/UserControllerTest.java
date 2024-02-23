@@ -57,14 +57,17 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        Long id = 1L;
         String email = "1test@test.com";
         String encodedPassword = new BCryptPasswordEncoder().encode("qwe123!@#");
         String nickname = "1test";
         Set<SimpleGrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority("ROLE_USER"));
-
+        // 사용자 정보 & 비밀번호 이력 저장
+        User user = new User(email, nickname, encodedPassword, UserRoleEnum.USER, true);
+        userRepository.save(user);
+        user.updatePassword(encodedPassword);
+        // 로그인한 사용자 정보 확인할 때 사용
         userDetails = UserDetailsImpl.builder()
-                .id(id)
+                .id(user.getId())
                 .email(email)
                 .password(encodedPassword)
                 .nickname(nickname)
@@ -81,18 +84,14 @@ class UserControllerTest {
     @Transactional
     @DisplayName("회원 정보 조회 성공 테스트")
     void getUser_success() throws Exception {
-        // given
-        User savedUser = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-
         // then
         mvc.perform(get(BASE_URL + "/profile")
                         .with(user(userDetails)) // 사용자 정보를 시뮬레이션하기 위해 MockMvc의 user() 메소드 사용
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(savedUser.getEmail()))
-                .andExpect(jsonPath("$.nickname").value(savedUser.getNickname()))
+                .andExpect(jsonPath("$.email").value(userDetails.getEmail()))
+                .andExpect(jsonPath("$.nickname").value(userDetails.getUsername()))
                 .andExpect(jsonPath("$.msg").value("유저 정보 조회 성공"));
     }
 

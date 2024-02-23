@@ -52,35 +52,36 @@ class PostControllerTest {
 
     private static final String BASE_URL = "/api/posts";
     private UserDetailsImpl userDetails;
+    private Post post;
 
     @BeforeEach
     void setUp() {
-        Long id = 1L;
         String email = "1test@test.com";
         String encodedPassword = new BCryptPasswordEncoder().encode("qwe123!@#");
         String nickname = "1test";
         Set<SimpleGrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority("ROLE_USER"));
 
+        User user = userRepository.save(new User(email, nickname, encodedPassword, UserRoleEnum.USER, true));
+        post = postRepository.save(new Post(user, "test", "test"));
+
         userDetails = UserDetailsImpl.builder()
-                .id(id)
+                .id(user.getId())
                 .email(email)
                 .password(encodedPassword)
                 .nickname(nickname)
                 .authorities(authorities)
                 .build();
+
+        // 게시물 목록 조회 시 사용할 mock 데이터
+        postRepository.save(new Post(user, "title1", "content1"));
+        postRepository.save(new Post(user, "title2", "content2"));
+        postRepository.save(new Post(user, "title3", "content3"));
     }
 
     @Test
     @Transactional
     @DisplayName("게시물 목록 조회 성공 테스트")
     void getAllPosts_success() throws Exception {
-        // given
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-        postRepository.save(new Post(user, "title1", "content1"));
-        postRepository.save(new Post(user, "title2", "content2"));
-        postRepository.save(new Post(user, "title3", "content3"));
-
         // then
         MvcResult result = mvc.perform(get(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +97,8 @@ class PostControllerTest {
         assertEquals("title3", jsonNode.get("content").get(0).get("title").asText());
         assertEquals("title2", jsonNode.get("content").get(1).get("title").asText());
         assertEquals("title1", jsonNode.get("content").get(2).get("title").asText());
-        assertEquals(3, jsonNode.get("totalElements").asInt());
+        assertEquals("test", jsonNode.get("content").get(3).get("title").asText());
+        assertEquals(4, jsonNode.get("totalElements").asInt());
     }
 
     @Test
@@ -104,13 +106,6 @@ class PostControllerTest {
     @DisplayName("게시물 목록 조회 성공 테스트 - 제목 검색")
     void getAllPosts_success_search() throws Exception {
         // given
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-        postRepository.save(new Post(user, "title1", "content1"));
-        postRepository.save(new Post(user, "title2", "content2"));
-        postRepository.save(new Post(user, "title3", "content3"));
-        postRepository.save(new Post(user, "test", "content4"));
-
         String keyword = "title";
 
         // then
@@ -136,18 +131,13 @@ class PostControllerTest {
     @Transactional
     @DisplayName("게시물 조회 성공 테스트")
     void getPost_success() throws Exception {
-        // given
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-        Post savedPost = postRepository.save(new Post(user, "title1", "content1"));
-
         // then
-        mvc.perform(get(BASE_URL + "/" + savedPost.getId())
+        mvc.perform(get(BASE_URL + "/" + post.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userNickname").value(user.getNickname()))
-                .andExpect(jsonPath("$.title").value("title1"))
-                .andExpect(jsonPath("$.content").value("content1"))
+                .andExpect(jsonPath("$.userNickname").value(post.getUser().getNickname()))
+                .andExpect(jsonPath("$.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andExpect(jsonPath("$.msg").value("게시물 조회 성공"));
     }
 
@@ -156,7 +146,7 @@ class PostControllerTest {
     @DisplayName("게시물 조회 실패 테스트 - 존재하지 않는 게시물")
     void getPost_fail_post_not_exist() throws Exception {
         // given
-        Long nonExistentPostId = 999L;
+        long nonExistentPostId = 999L;
 
         // then
         mvc.perform(get(BASE_URL + "/" + nonExistentPostId)
@@ -229,18 +219,14 @@ class PostControllerTest {
     @DisplayName("게시물 수정 성공 테스트")
     void updatePost_success() throws Exception {
         // given
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-        Post savedPost = postRepository.save(new Post(user, "title1", "content1"));
-
-        String title = "test";
-        String content = "test";
+        String title = "update";
+        String content = "update";
 
         // when
         PostRequest postRequest = new PostRequest(title, content);
 
         // then
-        mvc.perform(patch(BASE_URL + "/" + savedPost.getId())
+        mvc.perform(patch(BASE_URL + "/" + post.getId())
                         .with(user(userDetails))
                         .content(mapper.writeValueAsString(postRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -256,9 +242,9 @@ class PostControllerTest {
     @DisplayName("게시물 수정 실패 테스트 - 존재하지 않는 게시물")
     void updatePost_fail_post_not_exist() throws Exception {
         // given
-        Long nonExistentPostId = 999L;
-        String title = "test";
-        String content = "test";
+        long nonExistentPostId = 999L;
+        String title = "update";
+        String content = "update";
 
         // when
         PostRequest postRequest = new PostRequest(title, content);
@@ -277,12 +263,12 @@ class PostControllerTest {
     @DisplayName("게시물 수정 실패 테스트 - 작성자와 사용자 불일치")
     void updatePost_fail_user_different() throws Exception {
         // given
-        User user = new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true);
-        userRepository.save(user);
-        Post savedPost = postRepository.save(new Post(user, "title1", "content1"));
+        User differentUser = new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true);
+        userRepository.save(differentUser);
+        Post savedPost = postRepository.save(new Post(differentUser, "title1", "content1"));
 
-        String title = "test";
-        String content = "test";
+        String title = "update";
+        String content = "update";
 
         // when
         PostRequest postRequest = new PostRequest(title, content);
@@ -300,19 +286,14 @@ class PostControllerTest {
     @Transactional
     @DisplayName("게시물 삭제 성공 테스트")
     void deletePost_success() throws Exception {
-        // given
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("테스트를 위한 사용자를 찾을 수 없습니다."));
-        Post savedPost = postRepository.save(new Post(user, "title1", "content1"));
-
         // then
-        mvc.perform(delete(BASE_URL + "/" + savedPost.getId())
+        mvc.perform(delete(BASE_URL + "/" + post.getId())
                         .with(user(userDetails))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userNickname").value(userDetails.getUsername()))
-                .andExpect(jsonPath("$.title").value(savedPost.getTitle()))
-                .andExpect(jsonPath("$.content").value(savedPost.getContent()))
+                .andExpect(jsonPath("$.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andExpect(jsonPath("$.msg").value("게시물 삭제 성공"));
     }
 
@@ -321,7 +302,7 @@ class PostControllerTest {
     @DisplayName("게시물 삭제 실패 테스트 - 존재하지 않는 게시물")
     void deletePost_fail_post_not_exist() throws Exception {
         // given
-        Long nonExistentPostId = 999L;
+        long nonExistentPostId = 999L;
 
         // then
         mvc.perform(delete(BASE_URL + "/" + nonExistentPostId)
@@ -336,9 +317,9 @@ class PostControllerTest {
     @DisplayName("게시물 삭제 실패 테스트 - 작성자와 사용자 불일치")
     void deletePost_fail_user_different() throws Exception {
         // given
-        User user = new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true);
-        userRepository.save(user);
-        Post savedPost = postRepository.save(new Post(user, "title1", "content1"));
+        User differentUser = new User("user1@test.com", "user1", "password", UserRoleEnum.USER, true);
+        userRepository.save(differentUser);
+        Post savedPost = postRepository.save(new Post(differentUser, "title1", "content1"));
 
         // then
         mvc.perform(delete(BASE_URL + "/" + savedPost.getId())
