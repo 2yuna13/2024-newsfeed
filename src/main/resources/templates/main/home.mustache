@@ -1,5 +1,10 @@
 {{>layouts/header}}
 
+<div id="user">
+    {{#userDetails}}
+        <p>{{nickname}} 님 반갑습니다!</p>
+    {{/userDetails}}
+</div>
 <p id="user-info"></p>
 <ul id="user-posts"></ul>
 
@@ -29,9 +34,9 @@
             type: 'GET',
             success: function(response) {
                 // 사용자가 작성한 게시물을 화면에 표시합니다.
-                for (var i = 0; i < response.length; i++) {
+                for (var i = 0; i < response.content.length; i++) {
                     $('#user-posts').append(
-                        '<li>' + response[i].title + '</li>'
+                        '<li>' + response.content[i].title + '</li>'
                     );
                 }
             },

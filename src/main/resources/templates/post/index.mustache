@@ -1,0 +1,26 @@
+{{>layouts/header}}
+
+<h1>Post List</h1>
+<ul id="post-list"></ul>
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: '/api/posts',
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                for (var i = 0; i < response.content.length; i++) {
+                    $('#post-list').append(
+                      '<li>' + response.content[i].title + '</li>'
+                    );
+                }
+            },
+            error: function (error) {
+                console.error('Error fetching posts:', error);
+            }
+        });
+    });
+</script>
+
+{{>layouts/footer}}
