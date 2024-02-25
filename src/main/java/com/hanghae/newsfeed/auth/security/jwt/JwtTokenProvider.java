@@ -17,7 +17,7 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider { // 토큰을 만들고 분석하는 클래스
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String BEARER_PREFIX = "Bearer";
+    public static final String BEARER_PREFIX = "Bearer ";
     public static final String REFRESH_HEADER = "Refresh";
 
     @Value("${jwt.secret-key.access}")

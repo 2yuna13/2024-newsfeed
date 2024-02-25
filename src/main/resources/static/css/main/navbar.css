@@ -1,0 +1,37 @@
+.navbar {
+    background-color: #E5CCFF;
+}
+
+a.navbar-brand {
+  color: #330066;
+  letter-spacing: 1px;
+}
+
+a.nav-link {
+   color: #CC99FF;
+   letter-spacing: 1px;
+}
+
+.navbar-nav .nav-item:hover .nav-link {
+    color: #B266FF;
+}
+
+/* Center align text in navbar */
+.navbar-nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-nav .nav-item {
+    text-align: center;
+}
+
+.navbar-nav .nav-link {
+    display: inline-block;
+}
+
+.navbar-nav .nav-item:not(:last-child) {
+    margin-right: 30px;
+}

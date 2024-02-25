@@ -7,13 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostResponse {
+    private Long id;
     private String userNickname;
     private String title;
     private String content;
@@ -23,6 +22,7 @@ public class PostResponse {
 
     public static PostResponse createPostDto(Post post, String msg) {
         return new PostResponse(
+                post.getId(),
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getContent(),

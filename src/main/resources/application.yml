@@ -12,3 +12,8 @@ spring:
 
   profiles:
     include: secret
+
+server:
+  servlet:
+    encoding:
+      force: true
