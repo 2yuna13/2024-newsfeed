@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/login-page").permitAll()
+                        .requestMatchers("/home").permitAll()
+                        .requestMatchers("/posts/**").permitAll()
                         // 회원가입 및 로그인은 모든 사용자에게 허용
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()

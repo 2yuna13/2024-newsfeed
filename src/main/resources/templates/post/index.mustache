@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Post</title>
     <link rel="stylesheet" href="/css/main/navbar.css">
+    <link rel="stylesheet" href="/css/post/index.css">
     <!--favicon.ico-->
     <link rel="icon" href="data:;base64,=">
     <!-- jQuery -->
@@ -17,29 +18,24 @@
 
 <body>
 {{>main/navbar}}
-
-<h1>Post List</h1>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">제목</th>
-        <th scope="col">본문</th>
-        <th scope="col">작성자</th>
-        <th scope="col">좋아요 수</th>
-    </tr>
-    </thead>
-    <tbody>
+<ol class="activity-feed">
     {{#postList}}
-        <tr>
-            <th><a href="/posts/{{id}}">{{title}}</th>
-            <td>{{content}}</a></td>
-            <td>{{userNickname}}</td>
-            <td>{{likeCount}}</td>
-        </tr>
+        <li class="feed-item" data-color="purple">
+            <section>
+                <input type="checkbox" id="expand_{{id}}" name="expand_{{id}}" />
+                <label for="expand_{{id}}">
+                    <b>{{title}}</b>
+                    <p>{{userNickname}}</p>
+                </label>
+                <main class="content">
+                    <p>{{content}}</p>
+                    <p>좋아요 : {{likeCount}}</p>
+                    <a href="/posts/{{id}}" class="btn">댓글 보러가기</a>
+                </main>
+            </section>
+        </li>
     {{/postList}}
-    </tbody>
-</table>
+</ol>
 
 <a href="/posts/new">글 작성하기</a>
 
