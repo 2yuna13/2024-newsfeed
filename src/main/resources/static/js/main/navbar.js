@@ -11,6 +11,13 @@ $(document).ready(function () {
     window.location.href = "/myPage";
   });
 
+  const loginLogoutHTML = Cookies.get("accessToken")
+      ? `<a class="nav-link" href="#" id="logout-btn">Logout</a>`
+      : `<a class="nav-link" href="/login-page">Login</a>`;
+
+  // #loginLogoutItem 요소에 동적으로 추가
+  $("#loginLogoutItem").html(loginLogoutHTML);
+
   // 로그아웃 버튼 변수화
   const LogoutBtn = $("#logout-btn");
 
@@ -31,7 +38,7 @@ $(document).ready(function () {
           Cookies.remove("accessToken", { path: "/" });
 
           alert("로그아웃 성공");
-          window.location.href = "/login-page";
+          window.location.href = "/home";
         },
         error: function (jqXHR) {
           alert(`로그아웃 실패: ${jqXHR.responseJSON.message}`);
