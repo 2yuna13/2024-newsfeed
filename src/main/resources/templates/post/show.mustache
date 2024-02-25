@@ -18,30 +18,36 @@
 <body>
 {{>main/navbar}}
 
-<h1>Post List</h1>
-
 <table class="table">
     <thead>
     <tr>
         <th scope="col">제목</th>
         <th scope="col">본문</th>
         <th scope="col">작성자</th>
+        <th scope="col">멀티미디어</th>
         <th scope="col">좋아요 수</th>
     </tr>
     </thead>
     <tbody>
-    {{#postList}}
+    {{#post}}
         <tr>
-            <th><a href="/posts/{{id}}">{{title}}</th>
+            <th>{{title}}</th>
             <td>{{content}}</a></td>
             <td>{{userNickname}}</td>
+            <td>
+                {{#multimediaList}}
+                    <img src="{{fileUrl}}" alt="Multimedia File" width="100">
+                {{/multimediaList}}
+            </td>
             <td>{{likeCount}}</td>
         </tr>
-    {{/postList}}
+    {{/post}}
     </tbody>
 </table>
 
-<a href="/posts/new">글 작성하기</a>
+<a href="/posts/{{post.id}}/edit" class="btn btn-primary">수정</a>
+<a href="/posts/{{post.id}}/delete" class="btn btn-danger">삭제</a>
+<a href="/posts">게시물 목록</a>
 
 </body>
 
