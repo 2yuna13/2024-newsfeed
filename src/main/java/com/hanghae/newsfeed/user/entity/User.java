@@ -62,6 +62,7 @@ public class User extends Timestamped {
         this.password = password;
         this.role = role;
         this.active = active;
+        this.profileImage = "https://yuna-bucket.s3.ap-northeast-2.amazonaws.com/profile.png";
     }
 
     public void updateUser(UserUpdateRequest request) {
