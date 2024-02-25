@@ -30,8 +30,8 @@ public class UserPageController {
         return "user/login";
     }
 
-    @GetMapping("/signup-page")
-    public String joinForm() {
-        return "user/signup";
+    @GetMapping("/myPage")
+    public String myPage() {
+        return "user/myPage";
     }
 }
