@@ -18,6 +18,9 @@
 
 <body>
 {{>main/navbar}}
+<div style="width:100%;margin-top: 15px;text-align:right;">
+    <a href="/posts/new" class="post-new">새글 작성하기</a>
+</div>
 <ol class="activity-feed">
     {{#postList}}
         <li class="feed-item" data-color="purple">
@@ -36,8 +39,6 @@
         </li>
     {{/postList}}
 </ol>
-
-<a href="/posts/new">글 작성하기</a>
 
 </body>
 

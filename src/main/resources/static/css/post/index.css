@@ -1,115 +1,122 @@
 body {
-	font-family: 'Roboto', sans-serif;
-	font-weight: lighter;
-	margin: 0;
-	background-color: #fafafa;
+  font-family: "Roboto", sans-serif;
+  font-weight: lighter;
+  margin: 0;
+  background-color: #fafafa;
+}
+
+.post-new {
+  color: #b266ff;
+  padding: 25px;
+  text-decoration: none;
 }
 
 .activity-feed {
-	list-style-type: none;
-	padding: 0;
-	margin: 50px 50px 50px 60px;
-	.feed-item {
-		position: relative;
-		min-height: 60px;
-		margin-bottom: 25px;
-		padding-left: 30px;
-		border-left: 2px solid #ddd;
-    &:last-child { border-color: transparent; }
+  list-style-type: none;
+  padding: 0;
+  margin: 50px 50px 50px 60px;
+  .feed-item {
+    position: relative;
+    min-height: 60px;
+    margin-bottom: 25px;
+    padding-left: 30px;
+    border-left: 2px solid #ddd;
     &::after {
       content: attr(data-content);
       display: flex;
-			justify-content: center;
-			align-items: center;
+      justify-content: center;
+      align-items: center;
       position: absolute;
       top: 0;
       left: -21px;
       width: 40px;
       height: 40px;
-			font: normal normal normal 14px/1 FontAwesome;
-			font-size: inherit;
-			text-rendering: auto;
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       border-radius: 50%;
-			color: white;
-			background-color: #ddd;
-		}
-		section {
-			background-color: white;
-			//width: auto;
-			//display: inline-block;
-			padding: 15px;
-			border-radius: 4px;
-			border: 1px solid #f0f0f0;
-			&:hover {
-				box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-				transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-			}
-			label {
-				display: block;
-				cursor: pointer;
-				margin-bottom: 5px;
-                        b {
-                          font-size: 18px;
-                        }
-                        p {
-                          margin-top: 10px;
-                          font-size: 16px;
-                        }
-			}
-		}
-	}
+      color: white;
+      background-color: #ddd;
+    }
+    section {
+      background-color: white;
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #f0f0f0;
+      &:hover {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      label {
+        display: block;
+        cursor: pointer;
+        margin-bottom: 5px;
+        b {
+          font-size: 17px;
+        }
+        p {
+          margin-top: 10px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
 }
 
 input[type="checkbox"] {
-	display: none;
-	&:checked {
-		~ label {
-			&:after {
-				transform: rotate(45deg);
-				color: tomato;
-			}
-		}
-		~ .content {
-			max-height: 1000px;
-			border-top: 1px solid #f0f0f0;
-			padding-top: 15px;
-			margin-top: 10px;
-			transition: max-height .25s ease-in;
-		}
-	}
+  display: none;
+  &:checked {
+    ~ label {
+      &:after {
+        transform: rotate(45deg);
+        color: tomato;
+      }
+    }
+    ~ .content {
+      max-height: 1000px;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 15px;
+      margin-top: 10px;
+      transition: max-height 0.25s ease-in;
+    }
+  }
 }
 
 .content {
-	max-height: 0;
-	overflow: hidden;
-	blockquote {
-		position: relative;
-		&:before {
-			content: '';
-			position: absolute;
-			left: -25px;
-			top: 0;
-			height: 100%;
-			border-left: 2px solid #fcd000;
-		}
-	}
+  max-height: 0;
+  overflow: hidden;
+  blockquote {
+    position: relative;
+    &:before {
+      content: "";
+      position: absolute;
+      left: -25px;
+      top: 0;
+      height: 100%;
+      border-left: 2px solid #fcd000;
+    }
+  }
 }
 
 a.btn {
-    display: inline-block;
-    font-size: 14px;
-    text-align: center;
-    text-decoration: none;
-    background-color: #E5CCFF;
-    color: #fff;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  background-color: #e5ccff;
+  color: #fff;
+  border-radius: 5px;
+  transition: background-color 0.2s;
 }
 
 a.btn:hover {
-    background-color: #CC99FF;
+  background-color: #cc99ff;
 }
 
-[data-color=purple] { &:after { background-color: #B266FF !important; } }
+[data-color="purple"] {
+  &:after {
+    background-color: #b266ff !important;
+  }
+}
