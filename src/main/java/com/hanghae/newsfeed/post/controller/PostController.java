@@ -1,5 +1,6 @@
 package com.hanghae.newsfeed.post.controller;
 
+import com.hanghae.newsfeed.common.annotation.RunningTime;
 import com.hanghae.newsfeed.post.dto.request.PostRequest;
 import com.hanghae.newsfeed.post.dto.response.PostResponse;
 import com.hanghae.newsfeed.post.service.impl.PostServiceImpl;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +26,11 @@ public class PostController {
     private final PostServiceImpl postService;
 
     // 게시물 목록 조회
+    @RunningTime
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getAllPosts(
             @RequestParam(required = false) String keyword,
+            @PageableDefault(value = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts(keyword, pageable));
