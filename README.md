@@ -7,7 +7,7 @@
 <br/>
 
 ## 📝 ERD
-![ERD](https://github.com/2yuna13/2024-newsfeed/assets/121540949/767f26e5-2fad-417e-bff8-e93e23ea66af)
+![ERD](https://github.com/2yuna13/2024-newsfeed/assets/121540949/f9075285-d886-421b-92e5-179eb5e86197)
 
 ## 📝 API
 [API 명세서](https://documenter.getpostman.com/view/26860170/2sA2xb5apD)  
